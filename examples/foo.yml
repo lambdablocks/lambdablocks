@@ -2,9 +2,9 @@
 ---
 - type: input
   block: readfile
-  name: reafile
+  name: readfile
   args:
-    - filename: examples/longtext
+    filename: examples/longtext
 
 - type: middle
   block: text_to_words
@@ -36,9 +36,9 @@
   name: first_5
   inputs: [sort]
   args:
-    - n: 5
+    n: 5
 
 - type: output
   block: show_console
-  name: sort
-  inputs: [map_with_one]
+  name: show_console
+  inputs: [first_5]
