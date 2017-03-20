@@ -42,3 +42,8 @@
   block: show_console
   name: show_console
   inputs: [first_5]
+
+- type: output
+  block: plot_bars
+  name: plot_bars
+  inputs: [first_5]

@@ -4,6 +4,7 @@
 
 * python3
 * python3-yaml
+* python3-matplotlib
 
 ## Run examples
 

@@ -1,4 +1,4 @@
-from lb.decorators import middle_block
+from lb.decorators import middle_block, block
 
 @middle_block
 def text_to_words():
@@ -46,3 +46,12 @@ def first_n(n):
         o = input_.take(n)
         return o
     return inner
+
+# @block(type='transform', inputs=['list'], outputs=['csv'])
+# def list_to_csv():
+#     def inner(input_):
+#         o = []
+#         for elem in input_:
+#             o.append(','.join([str(x) for x in elem]))
+#         return o
+#     return inner
