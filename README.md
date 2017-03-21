@@ -6,6 +6,7 @@ It is composed of a registry of predefined "blocks", and it is easy to
 add your own blocks using Python.
 
 A block is a snippet of code performing one of these 3 actions:
+
 * Generate data, for example from a file on disk on from an API.
 * Transform data, for example filtering useless lines, counting,
   aggregating, feeding an ML engine, etc.
@@ -24,6 +25,7 @@ format allows for many ways to write data analysis programs: writing
 topology.
 
 To sum-up, λ-blocks has the following benefits:
+
 * engine-agnostic representation format for describing data
   transformation,
 * parametrisable, reusable and composable code snippets (blocks) which
