@@ -3,9 +3,9 @@ import pyspark
 
 from pprint import pprint
 
-from lb.decorators import output_block, block
+from lb.registry import block
 
-@output_block
+@block(inputs=['list'], outputs=[''])
 def show_console():
     def inner(input_):
         if type(input_) == pyspark.rdd.PipelinedRDD:
@@ -18,7 +18,7 @@ def show_console():
         return None
     return inner
 
-@block(type='output', inputs=['csv'], outputs=[''])
+@block(inputs=['list'], outputs=[''])
 def plot_bars():
     def inner(input_):
         axis_y = [x[0] for x in input_]

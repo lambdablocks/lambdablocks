@@ -1,30 +1,33 @@
 import inspect
+import pkgutil
 import yaml
 
 from collections import defaultdict, deque
 
-import lb.blocks.input
-import lb.blocks.middle
-import lb.blocks.output
+import lb.blocks
 
-def get_block_functions():
-    block_functions = {}
-    for name, module in [('input', lb.blocks.input),
-                         ('middle', lb.blocks.middle),
-                         ('output', lb.blocks.output)]:
-        block_functions[name] = {}
-        functions = inspect.getmembers(module, inspect.isfunction)
-        for function in functions:
-            block_functions[name][function[0]] = function[1]
-    return block_functions
+def get_block_functions(external_modules=[]):
+    # we list all local modules (lb/blocks/*)
+    local_modules = []
+    local_package = lb.blocks
+    prefix = local_package.__name__ + "."
+    for _, module, _ in pkgutil.iter_modules(local_package.__path__, prefix):
+        local_modules.append(module)
+
+    # we import all modules, so they get registered through the decorator
+    for module in local_modules + external_modules:
+        __import__(module)
+
+    from lb.registry import all_blocks
+    return all_blocks
 
 def build_graph(blocks):
     vertices = {}
-    inputs = []
+    entry_points = []
     for block in blocks:
         vertices[block['name']] = block
-        if block['type'] == 'input':
-            inputs.append(block['name'])
+        if 'inputs' not in block.keys() or block['inputs'] == []:
+            entry_points.append(block['name'])
 
     edges = defaultdict(list)
     for k,v in vertices.items():
@@ -32,7 +35,7 @@ def build_graph(blocks):
             for input_ in v['inputs']:
                 edges[input_].append(k)
 
-    return inputs, vertices, edges
+    return entry_points, vertices, edges
 
 def parse_yaml(filename):
     with open(filename) as f:
@@ -47,7 +50,7 @@ def execute(inputs, vertices, edges):
     while len(fun_queue) > 0:
         block_name = fun_queue.popleft()
         # we compute this block
-        comp_fun = block_functions[vertices[block_name]['type']][vertices[block_name]['block']]
+        comp_fun = block_functions[vertices[block_name]['block']]['func']
         try:
             comp_args = vertices[block_name]['args']
         except KeyError:

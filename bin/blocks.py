@@ -6,6 +6,10 @@ def parse_args():
     parser.add_argument('-f', '--filename',
                         required=True,
                         help='YAML file to be executed.')
+    parser.add_argument('-m', '--modules',
+                        required=False,
+                        nargs='*',
+                        help='Additional Python modules containing blocks.')
     args = parser.parse_args()
     return args
 
