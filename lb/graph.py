@@ -50,7 +50,7 @@ def execute(inputs, vertices, edges):
     while len(fun_queue) > 0:
         block_name = fun_queue.popleft()
         # we compute this block
-        comp_fun = block_functions[vertices[block_name]['block']]['func']
+        comp_fun = block_functions[vertices[block_name]['block']]['_func']
         try:
             comp_args = vertices[block_name]['args']
         except KeyError:

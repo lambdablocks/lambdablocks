@@ -5,9 +5,9 @@ from pprint import pprint
 
 from lb.registry import block
 
-@block(inputs=['list'], outputs=[''])
+@block(engine='spark')
 def show_console():
-    def inner(input_):
+    def inner(input_: pyspark.rdd.RDD) -> None:
         if type(input_) == pyspark.rdd.PipelinedRDD:
             o = input_.collect()
         else:
@@ -18,9 +18,9 @@ def show_console():
         return None
     return inner
 
-@block(inputs=['list'], outputs=[''])
+@block(engine='matplotlib')
 def plot_bars():
-    def inner(input_):
+    def inner(input_: list) -> None:
         axis_y = [x[0] for x in input_]
         axis_x = range(len(axis_y))
         labels = [x[1] for x in input_]

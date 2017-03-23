@@ -4,9 +4,9 @@ from lb.registry import block
 
 spark_context = pyspark.SparkContext('local', 'testing stuff')
 
-@block(inputs=[], outputs=['spark_rdd'])
-def readfile(filename=None):
-    def inner(dummy):
+@block(engine='spark')
+def readfile(filename: str=None):
+    def inner(dummy) -> pyspark.rdd.RDD:
         o = spark_context.textFile(filename)
         return o
     return inner
