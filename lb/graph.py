@@ -58,7 +58,7 @@ def execute(inputs, vertices, edges):
         try:
             comp_inputs = [results[x] for x in vertices[block_name]['inputs']]
         except KeyError:
-            comp_inputs = [None]
+            comp_inputs = []
         results[block_name] = comp_fun(**comp_args)(*comp_inputs)
         # we add this block's destinations to the queue
         fun_queue.extend(edges[block_name])
