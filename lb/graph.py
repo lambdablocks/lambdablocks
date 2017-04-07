@@ -65,7 +65,8 @@ def execute(inputs, vertices, edges):
             try:
                 comp_inputs = [results[x] for x in vertices[block_name]['inputs']]
             except KeyError as e:
-                comp_inputs = []
+                raise Exception('%s was scheduled for execution, but lacks some inputs: %s'
+                                % (block_name, str(vertices[block_name]['inputs'])))
             results[block_name] = comp_fun(**comp_args)(*comp_inputs)
             # we add this block's destinations to the queue,
             # if they are not there already
