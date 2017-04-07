@@ -49,3 +49,9 @@ def first_n(n: int=0):
         o = input_.take(n)
         return o
     return inner
+
+@block(engine='spark')
+def union():
+    def inner(first: pyspark.rdd.RDD, second: pyspark.rdd.RDD) -> pyspark.rdd.RDD:
+        return first.union(second)
+    return inner

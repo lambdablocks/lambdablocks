@@ -28,6 +28,8 @@ def build_graph(blocks):
         vertices[block['name']] = block
         if 'inputs' not in block.keys() or block['inputs'] == []:
             entry_points.append(block['name'])
+            # we still want to have an empty list to avoid KeyErrors
+            block['inputs'] = []
 
     edges = defaultdict(list)
     for k,v in vertices.items():
@@ -49,19 +51,27 @@ def execute(inputs, vertices, edges):
 
     while len(fun_queue) > 0:
         block_name = fun_queue.popleft()
-        # we compute this block
-        comp_fun = block_functions[vertices[block_name]['block']]['_func']
-        try:
-            comp_args = vertices[block_name]['args']
-        except KeyError:
-            comp_args = {}
-        try:
-            comp_inputs = [results[x] for x in vertices[block_name]['inputs']]
-        except KeyError:
-            comp_inputs = []
-        results[block_name] = comp_fun(**comp_args)(*comp_inputs)
-        # we add this block's destinations to the queue
-        fun_queue.extend(edges[block_name])
+        # do the block inputs have been computed yet?
+        for input_ in vertices[block_name]['inputs']:
+            if input_ not in results.keys():
+                fun_queue.append(block_name)
+                break
+        else: # ok, all inputs have been computed, we proceed
+            comp_fun = block_functions[vertices[block_name]['block']]['_func']
+            try:
+                comp_args = vertices[block_name]['args']
+            except KeyError:
+                comp_args = {}
+            try:
+                comp_inputs = [results[x] for x in vertices[block_name]['inputs']]
+            except KeyError as e:
+                comp_inputs = []
+            results[block_name] = comp_fun(**comp_args)(*comp_inputs)
+            # we add this block's destinations to the queue,
+            # if they are not there already
+            for destination in edges[block_name]:
+                if destination not in fun_queue:
+                    fun_queue.append(destination)
 
 def compute_graph(filename):
     blocks = parse_yaml(filename)
