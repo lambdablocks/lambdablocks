@@ -1,22 +1,6 @@
 import matplotlib.pyplot as plt
-import pyspark
-
-from pprint import pprint
 
 from lb.registry import block
-
-@block(engine='spark')
-def show_console():
-    def inner(input_: pyspark.rdd.RDD) -> None:
-        if type(input_) == pyspark.rdd.PipelinedRDD:
-            o = input_.collect()
-        else:
-            o = input_
-        print('\033[92m')
-        pprint(o)
-        print('\033[0m')
-        return None
-    return inner
 
 @block(engine='matplotlib')
 def plot_bars():

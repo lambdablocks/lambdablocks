@@ -1,6 +1,20 @@
 import pyspark
+from pprint import pprint
 
 from lb.registry import block
+
+spark_context = pyspark.SparkContext('local', 'testing stuff')
+
+### INPUT BLOCKS ###
+
+@block(engine='spark')
+def readfile(filename: str=None):
+    def inner() -> pyspark.rdd.RDD:
+        o = spark_context.textFile(filename)
+        return o
+    return inner
+
+### MIDDLE BLOCKS ###
 
 @block(engine='spark',
        description='Converts a line of text into a list of lower-case words.')
@@ -54,4 +68,27 @@ def first_n(n: int=0):
 def union():
     def inner(first: pyspark.rdd.RDD, second: pyspark.rdd.RDD) -> pyspark.rdd.RDD:
         return first.union(second)
+    return inner
+
+@block(engine='spark')
+def split(ratio=0.5):
+    def inner(input_: pyspark.rdd.RDD) -> {'first': pyspark.rdd.RDD, 'second': pyspark.rdd.RDD}:
+        first = input_.filter(lambda x: x[1][0] == 's')
+        second = input_.filter(lambda x: x[1][0] != 's')
+        return {'first': first, 'second': second}
+    return inner
+
+### OUTPUT BLOCKS ###
+
+@block(engine='spark')
+def show_console():
+    def inner(input_: pyspark.rdd.RDD) -> None:
+        if type(input_) == pyspark.rdd.PipelinedRDD:
+            o = input_.collect()
+        else:
+            o = input_
+        print('\033[92m')
+        pprint(o)
+        print('\033[0m')
+        return None
     return inner
