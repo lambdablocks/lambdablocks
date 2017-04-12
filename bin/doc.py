@@ -45,8 +45,18 @@ def doc_block(block_name, block_properties):
                   + ' ('
                   + str(item.annotation.__name__)
                   + ')')
-    if block_properties['_output']:
-        print(format_red('  output') + ': ' + block_properties['_output'].__name__)
+    output = block_properties['_output']
+    if output:
+        print(format_red('  output') + ': ')
+        if type(output) == dict: # multi output
+            for (name, type_) in output.items():
+                print('    - '
+                      + format_green(str(name))
+                      + ' ('
+                      + str(type_.__name__)
+                      + ')')
+        else: # single output
+            print('    ' + str(output.__name__))
     print()
 
 def main():
