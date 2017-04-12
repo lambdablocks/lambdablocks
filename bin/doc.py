@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from lb.graph import get_block_functions
+from lb.registry import Registry
 
 BOLD = '\033[1m'
 RED = '\033[91m'
@@ -50,8 +50,9 @@ def doc_block(block_name, block_properties):
     print()
 
 def main():
-    blocks = get_block_functions()
-    for (block_name, block_properties) in blocks.items():
+    registry = Registry()
+
+    for (block_name, block_properties) in registry.items():
         doc_block(block_name, block_properties)
 
 if __name__ == '__main__':

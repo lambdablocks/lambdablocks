@@ -13,28 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import inspect
-import pkgutil
+"""
+This modules provides facilities to build and run a topology graph out
+of a YAML file.
+"""
+
 import yaml
 
 from collections import defaultdict, deque
 
-import lb.blocks
-
-def get_block_functions(external_modules=[]):
-    # we list all local modules (lb/blocks/*)
-    local_modules = []
-    local_package = lb.blocks
-    prefix = local_package.__name__ + "."
-    for _, module, _ in pkgutil.iter_modules(local_package.__path__, prefix):
-        local_modules.append(module)
-
-    # we import all modules, so they get registered through the decorator
-    for module in local_modules + external_modules:
-        __import__(module)
-
-    from lb.registry import all_blocks
-    return all_blocks
+from lb.registry import Registry
 
 def build_graph(blocks):
     vertices = {}
@@ -73,9 +61,8 @@ def parse_yaml(filename):
         blocks = yaml.load(f)
     return blocks
 
-def execute(inputs, vertices, edges):
+def execute(registry, inputs, vertices, edges):
     results = {}
-    block_functions = get_block_functions()
     fun_queue = deque(inputs)
 
     while len(fun_queue) > 0:
@@ -86,7 +73,7 @@ def execute(inputs, vertices, edges):
                 fun_queue.append(block_name)
                 break
         else: # ok, all inputs have been computed, we proceed
-            comp_fun = block_functions[vertices[block_name]['block']]['_func']
+            comp_fun = registry[vertices[block_name]['block']]['_func']
             try:
                 comp_args = vertices[block_name]['args']
             except KeyError:
@@ -113,6 +100,7 @@ def execute(inputs, vertices, edges):
                     fun_queue.append(destination['name'])
 
 def compute_graph(filename):
+    registry = Registry()
     blocks = parse_yaml(filename)
     inputs, vertices, edges = build_graph(blocks)
-    execute(inputs, vertices, edges)
+    execute(registry, inputs, vertices, edges)

@@ -13,27 +13,86 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import inspect
+"""
+This module manages the blocks registry.  It provides a decorator for
+blocks to register themselves, and a Registry class to manage
+registered blocks.
+"""
 
-all_blocks = {}
+import importlib
+import inspect
+import pkgutil
+
+import lb.blocks
 
 def block(**kwargs):
+    """
+    Decorator to define a block, so it can get added to the registry.
+    Use it as follows:
+    @block(engine='foo', description='bar', my_other_metadata='foobar')
+    def my_block()...
+    """
     def block_decorator(func):
-        def inner(*args, **kwargs):
-            return func(*args, **kwargs)
+        func._metadata = kwargs
+        func._is_block = True
+        return func
+    return block_decorator
 
-        # registers the function
+class Registry:
+    """
+    A registry contains a list of registered blocks, along with their
+    inferred properties, such as their parameters, metadata, inputs
+    and output.
+    """
+    def __init__(self, external_modules=[], load_internal_modules=True):
+        """
+        Loads Python modules containing blocks and registers them.
+        """
+        self.blocks = {}
+
+        if load_internal_modules:
+            # we list all local modules (lb/blocks/*)
+            internal_modules = []
+            local_package = lb.blocks
+            prefix = local_package.__name__ + "."
+            for _, module, _ in pkgutil.iter_modules(local_package.__path__, prefix):
+                internal_modules.append(module)
+        else:
+            local_modules = []
+        for module in internal_modules + external_modules:
+            mod = importlib.import_module(module)
+            for _, func in mod.__dict__.items():
+                if hasattr(func, '_is_block') and func._is_block:
+                    self._register_block(func)
+
+    def _register_block(self, func):
+        """
+        Registers a Python function as a block.  It must follow block
+        requirements.
+        """
         name = func.__name__
         # gets the function factory parameters
         sig_outer = inspect.signature(func)
         # gets the inner function  parameters
         sig_inner = inspect.signature(func())
-        all_blocks[name] = {
+        # registers the block
+        self.blocks[name] = {
             '_func':   func,
             '_parameters': sig_outer.parameters,
             '_inputs': sig_inner.parameters,
             '_output': sig_inner.return_annotation,
-            **kwargs}
+            '_metadata': func._metadata,
+            }
 
-        return inner
-    return block_decorator
+    def __getitem__(self, block_name):
+        """
+        Returns the registered block block_name.
+        """
+        return self.blocks[block_name]
+
+    def items(self):
+        """
+        Iterates through the registered blocks.
+        Thow a list of tuples (block_name, block_properties).
+        """
+        return self.blocks.items()
