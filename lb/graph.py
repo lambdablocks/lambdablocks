@@ -22,8 +22,6 @@ import yaml
 
 from collections import defaultdict, deque
 
-from lb.registry import Registry
-
 class Graph:
     def __init__(self, filename, registry):
         """
