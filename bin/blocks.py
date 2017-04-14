@@ -15,6 +15,9 @@
 
 import argparse
 
+from lb.graph import Graph
+from lb.registry import Registry
+
 def parse_args():
     parser = argparse.ArgumentParser(
         description='Runs a yaml-defined DAG.')
@@ -36,11 +39,11 @@ def parse_args():
 def main():
     args = parse_args()
 
-    # imported here to avoid creating a Spark context when not needed
-    from lb.graph import compute_graph
-    compute_graph(filename=args.filename,
-                  external_modules=args.modules,
-                  load_internal_modules=args.no_internal_modules)
+    registry = Registry(external_modules=args.modules,
+                       load_internal_modules=args.no_internal_modules)
+
+    g = Graph(args.filename, registry)
+    g.execute()
 
 if __name__ == '__main__':
     main()
