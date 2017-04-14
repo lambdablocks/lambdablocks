@@ -72,17 +72,27 @@ class Registry:
         """
         name = func.__name__
         # gets the function factory parameters
-        sig_outer = inspect.signature(func)
+        if callable(func):
+            sig_outer = inspect.signature(func)
+        else:
+            raise Exception('Malformed block: ' + name)
         # gets the inner function  parameters
-        sig_inner = inspect.signature(func())
+        inner = func()
+        if callable(inner):
+            sig_inner = inspect.signature(inner)
+        else:
+            raise Exception('Malformed block: ' + name)
         # registers the block
-        self.blocks[name] = {
-            '_func':   func,
-            '_parameters': sig_outer.parameters,
-            '_inputs': sig_inner.parameters,
-            '_output': sig_inner.return_annotation,
-            '_metadata': func._metadata,
-            }
+        if name in self.blocks.keys():
+            raise Exception('Duplicated block name: ' + name)
+        else:
+            self.blocks[name] = {
+                '_func':   func,
+                '_parameters': sig_outer.parameters,
+                '_inputs': sig_inner.parameters,
+                '_output': sig_inner.return_annotation,
+                '_metadata': func._metadata,
+                }
 
     def __getitem__(self, block_name):
         """
