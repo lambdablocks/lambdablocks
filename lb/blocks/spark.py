@@ -88,7 +88,7 @@ def union():
 @block(engine='spark')
 def split(ratio=0.5):
     def inner(input_: pyspark.rdd.RDD) -> {'first': pyspark.rdd.RDD, 'second': pyspark.rdd.RDD}:
-        first = input_.filter(lambda x: x[1][0] == 's')
+        first = input_.filter(lambda x: x[1][0] == 's') # todo
         second = input_.filter(lambda x: x[1][0] != 's')
         return {'first': first, 'second': second}
     return inner
