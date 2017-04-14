@@ -35,10 +35,16 @@ class Graph:
         self._check_dag()
 
     def _parse_file(self):
+        """
+        Parses a YAML file defining a DAG.
+        """
         with open(self.filename) as f:
             self.blocks = yaml.load(f)
 
     def _build_dag(self):
+        """
+        Builds a DAG from a list of blocks and their inputs.
+        """
         vertices = {}
         entry_points = []
         for block in self.blocks:
@@ -73,9 +79,17 @@ class Graph:
         self.edges = edges
 
     def _check_dag(self):
+        """
+        Checks various things on a DAG:
+        - foo
+        """
         pass
 
     def execute(self):
+        """
+        Executes a DAG, beginning with all its entry points and giving
+        their outputs to their consumers, iteratively.
+        """
         results = {}
         fun_queue = deque(self.entry_points)
 
