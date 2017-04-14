@@ -24,7 +24,12 @@ def parse_args():
     parser.add_argument('-m', '--modules',
                         required=False,
                         nargs='*',
+                        default=[],
                         help='Additional Python modules containing blocks.')
+    parser.add_argument('--no-internal-modules',
+                        required=False,
+                        action='store_false',
+                        help='Do not load lambda-blocks predefined modules.')
     args = parser.parse_args()
     return args
 
@@ -33,8 +38,9 @@ def main():
 
     # imported here to avoid creating a Spark context when not needed
     from lb.graph import compute_graph
-
-    compute_graph(args.filename)
+    compute_graph(filename=args.filename,
+                  external_modules=args.modules,
+                  load_internal_modules=args.no_internal_modules)
 
 if __name__ == '__main__':
     main()

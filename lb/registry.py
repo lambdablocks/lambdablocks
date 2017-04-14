@@ -58,7 +58,7 @@ class Registry:
             for _, module, _ in pkgutil.iter_modules(local_package.__path__, prefix):
                 internal_modules.append(module)
         else:
-            local_modules = []
+            internal_modules = []
         for module in internal_modules + external_modules:
             mod = importlib.import_module(module)
             for _, func in mod.__dict__.items():

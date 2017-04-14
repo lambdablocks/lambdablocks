@@ -99,8 +99,9 @@ def execute(registry, inputs, vertices, edges):
                 if destination['name'] not in fun_queue:
                     fun_queue.append(destination['name'])
 
-def compute_graph(filename):
-    registry = Registry()
+def compute_graph(filename=None, external_modules=[], load_internal_modules=True):
+    registry = Registry(external_modules=external_modules,
+                        load_internal_modules=load_internal_modules)
     blocks = parse_yaml(filename)
     inputs, vertices, edges = build_graph(blocks)
     execute(registry, inputs, vertices, edges)
