@@ -74,7 +74,7 @@ def sort():
 
 @block(engine='spark')
 def first_n(n: int=0):
-    def inner(input_: pyspark.rdd.RDD) -> pyspark.rdd.RDD:
+    def inner(input_: pyspark.rdd.RDD) -> list:
         o = input_.take(n)
         return o
     return inner
@@ -97,11 +97,8 @@ def split(ratio=0.5):
 
 @block(engine='spark')
 def show_console():
-    def inner(input_: pyspark.rdd.RDD) -> None:
-        if type(input_) == pyspark.rdd.PipelinedRDD:
-            o = input_.collect()
-        else:
-            o = input_
+    def inner(input_: list) -> None:
+        o = input_
         print('\033[92m')
         pprint(o)
         print('\033[0m')
