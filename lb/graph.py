@@ -33,6 +33,7 @@ class Graph:
         self._parse_file()
         self._check_yaml()
         self._build_dag()
+        self._check_dag_types()
 
     def _parse_file(self):
         """
@@ -99,6 +100,32 @@ class Graph:
                     assert type(value) == expected_type, \
                       'Arg {} for block {} is of type {}, expected {}'.format(
                           name, block['name'], type(value), expected_type)
+
+    def _check_dag_types(self):
+        """
+        Checks that every output has the same type as the inputs where
+        it's consumed.
+        """
+        for block, props in self.vertices.items():
+            # check number of inputs is correct
+            assert len(props['inputs']) == len(self.registry[props['block']]['_inputs']), \
+              'Wrong number of inputs for block {}'.format(block)
+            # check input types are correct
+            for (i, input_) in enumerate(props['inputs']):
+                # for this input, we expect this type:
+                expected_type = list(self.registry[props['block']]['_inputs'].values())[i].annotation
+                if '.' in input_: # multiple output
+                    # the connected block producing this value:
+                    producer_name, producer_subkey = input_.split('.')
+                    producer_block = self.vertices[producer_name]['block']
+                    received_type = self.registry[producer_block]['_output'][producer_subkey]
+                else: # single output
+                    # the connected block producing this value:
+                    producer_block = self.vertices[input_]['block']
+                    received_type = self.registry[producer_block]['_output']
+                assert expected_type == received_type, \
+                  'Input {} for block {} is of type {}, but block {} is producing {}'.format(
+                      input_, block, expected_type, producer_block, received_type)
 
     def execute(self):
         """
