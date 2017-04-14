@@ -103,6 +103,12 @@ class Registry:
     def items(self):
         """
         Iterates through the registered blocks.
-        Thow a list of tuples (block_name, block_properties).
+        Throw a list of tuples (block_name, block_properties).
         """
         return self.blocks.items()
+
+    def keys(self):
+        """
+        Returns the list of registered block names.
+        """
+        return self.blocks.keys()

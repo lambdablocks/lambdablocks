@@ -31,8 +31,8 @@ class Graph:
         self.filename = filename
         self.registry = registry
         self._parse_file()
+        self._check_yaml()
         self._build_dag()
-        self._check_dag()
 
     def _parse_file(self):
         """
@@ -78,12 +78,27 @@ class Graph:
         self.vertices = vertices
         self.edges = edges
 
-    def _check_dag(self):
+    def _check_yaml(self):
         """
-        Checks various things on a DAG:
-        - foo
+        Checks that the YAML file is correctly typed.
         """
-        pass
+        block_names = []
+        for block in self.blocks:
+            # be sure every block has a name (unique) and is
+            # associated to a registered block
+            assert type(block) == dict, 'Block is malformed: ' + str(block)
+            assert 'name' in block.keys(), "Block doesn't have a name: " + str(block)
+            assert 'block' in block.keys(), "Block doesn't have a block: " + str(block)
+            assert block['name'] not in block_names, 'Block name is duplicated: ' + block['name']
+            block_names.append(block['name'])
+            assert block['block'] in self.registry.keys(), "Block doesn't exist: " + block['block']
+            # check arguments' types
+            if 'args' in block.keys():
+                for name, value in block['args'].items():
+                    expected_type = self.registry[block['block']]['_parameters'][name].annotation
+                    assert type(value) == expected_type, \
+                      'Arg {} for block {} is of type {}, expected {}'.format(
+                          name, block['name'], type(value), expected_type)
 
     def execute(self):
         """
