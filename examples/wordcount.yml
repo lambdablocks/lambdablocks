@@ -1,4 +1,6 @@
-# gives the top 5 words along with their number of occurences
+---
+- name: Wordcount
+- description: Gives the top 5 words along with their number of occurences
 ---
 - block: readfile
   name: readfile

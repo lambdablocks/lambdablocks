@@ -41,7 +41,11 @@ class Graph:
         Parses a YAML file defining a DAG.
         """
         with open(self.filename) as f:
-            self.blocks = yaml.safe_load(f)
+            documents = list(yaml.safe_load_all(f))
+            assert len(documents) == 2, \
+                'YAML file must contain 2 documents: metadata, and DAG description.'
+            self.dag_metadata = documents[0]
+            self.blocks = documents[1]
 
     def _build_dag(self):
         """
