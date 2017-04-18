@@ -41,7 +41,7 @@ class Graph:
         Parses a YAML file defining a DAG.
         """
         with open(self.filename) as f:
-            self.blocks = yaml.load(f)
+            self.blocks = yaml.safe_load(f)
 
     def _build_dag(self):
         """
