@@ -34,6 +34,7 @@ class Graph:
         self._check_yaml()
         self._build_dag()
         self._check_dag_types()
+        self._check_dag_no_loops()
 
     def _parse_file(self):
         """
@@ -126,6 +127,21 @@ class Graph:
                 assert expected_type == received_type, \
                   'Input {} for block {} is of type {}, but block {} is producing {}'.format(
                       input_, block, expected_type, producer_block, received_type)
+
+    def _check_dag_no_loops(self):
+        """
+        Checks that the DAG doesn't contain loops.
+        """
+        for entry in self.entry_points:
+            visited = []
+            to_visit = deque([entry])
+            while len(to_visit) > 0:
+                current_block = to_visit.popleft()
+                assert current_block not in visited, \
+                    'There is a loop in your DAG, occuring with the block {}'.format(current_block)
+                visited.append(current_block)
+                for dest in self.edges[current_block]['next']:
+                    to_visit.append(dest['name'])
 
     def execute(self):
         """
