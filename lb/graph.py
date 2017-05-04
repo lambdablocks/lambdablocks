@@ -61,6 +61,11 @@ class Graph:
                 # we still want to have an empty list to avoid KeyErrors
                 block['inputs'] = []
 
+        if len(entry_points) == 0:
+            raise Exception(
+                "Your topology doesn't have any entry point (a block "
+                "without any input). Nothing to execute.")
+
         edges = defaultdict(lambda: {'prev': [],
                                      'next': []})
 
