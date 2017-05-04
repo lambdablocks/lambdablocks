@@ -55,6 +55,7 @@ class Graph:
         entry_points = []
         for block in self.blocks:
             vertices[block['name']] = block
+            # is it a DAG entry point?
             if 'inputs' not in block.keys() or block['inputs'] == []:
                 entry_points.append(block['name'])
                 # we still want to have an empty list to avoid KeyErrors
@@ -65,6 +66,9 @@ class Graph:
 
         for block2, block2_props in vertices.items():
             for input_ in block2_props['inputs']:
+                if input_ not in vertices.keys():
+                    raise Exception('Block {} has an unknown input: {}'
+                                    .format(block2, input_))
                 # we add the vertice between block1 and block2, in both directions
                 if '.' in input_:
                     # named output, when a block outputs multiple values
