@@ -17,9 +17,12 @@ This modules provides facilities to build and run a topology graph out
 of a YAML file.
 """
 
+import inspect
 import yaml
 
 from collections import defaultdict, deque
+
+import lb.types
 
 class Graph:
     def __init__(self, filename, registry):
@@ -110,7 +113,7 @@ class Graph:
             if 'args' in block.keys():
                 for name, value in block['args'].items():
                     expected_type = self.registry[block['block']]['_parameters'][name].annotation
-                    assert type(value) == expected_type, \
+                    assert lb.types.is_instance(value, expected_type), \
                       'Arg {} for block {} is of type {}, expected {}'.format(
                           name, block['name'], type(value), expected_type)
 
@@ -120,13 +123,9 @@ class Graph:
         it's consumed.
         """
         for block, props in self.vertices.items():
-            # check number of inputs is correct
-            assert len(props['inputs']) == len(self.registry[props['block']]['_inputs']), \
-              'Wrong number of inputs for block {}'.format(block)
-            # check input types are correct
-            for (i, input_) in enumerate(props['inputs']):
-                # for this input, we expect this type:
-                expected_type = list(self.registry[props['block']]['_inputs'].values())[i].annotation
+            # we collect the actual types this block receives
+            received_types = []
+            for input_ in props['inputs']:
                 if '.' in input_: # multiple output
                     # the connected block producing this value:
                     producer_name, producer_subkey = input_.split('.')
@@ -136,9 +135,30 @@ class Graph:
                     # the connected block producing this value:
                     producer_block = self.vertices[input_]['block']
                     received_type = self.registry[producer_block]['_output']
-                assert expected_type == received_type, \
-                  'Input {} for block {} is of type {}, but block {} is producing {}'.format(
-                      input_, block, expected_type, producer_block, received_type)
+                received_types.append(received_type)
+
+            # we collect from the registry the list of expected types this
+            # block is supposed to receive
+            expected_types = []
+            for expected_input in self.registry[props['block']]['_inputs'].values():
+                if expected_input.kind == inspect.Parameter.POSITIONAL_OR_KEYWORD:
+                    # "normal" parameter
+                    expected_types.append(expected_input.annotation)
+                elif expected_input.kind == inspect.Parameter.VAR_POSITIONAL:
+                    # "tuple" parameter, *args
+                    # We fill all the remaining types with this one,
+                    # considering the number of supplied parameters is correct
+                    missing = len(received_types) - len(expected_types)
+                    expected_types.extend([expected_input.annotation] * missing)
+                else:
+                    # keyword parameter or something else, we ignore the rest
+                    break
+
+            # and we check that they are compatible
+            assert lb.types.is_sig_compatible(
+                tuple(received_types), tuple(expected_types)), \
+                'Block {} has signature\n{}\nbut has inputs\n{}'.format(
+                    block, expected_types, received_types)
 
     def _check_dag_no_loops(self):
         """
