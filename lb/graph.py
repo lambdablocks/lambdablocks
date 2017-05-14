@@ -191,6 +191,7 @@ class Graph:
         their outputs to their consumers, iteratively.
         """
         results = {}
+        final_results = {}
         fun_queue = deque(self.entry_points)
 
         while len(fun_queue) > 0:
@@ -221,8 +222,15 @@ class Graph:
                         raise Exception('%s was scheduled for execution, but lacks some inputs: %s'
                                         % (block_name, str(self.vertices[block_name]['inputs'])))
                 results[block_name] = comp_fun(**comp_args)(*comp_inputs)
+
+                # if this block has no destination, it is a final block, we store its result
+                if not self.edges[block_name]['next']:
+                    final_results[block_name] = results[block_name]
+
                 # we add this block's destinations to the queue,
                 # if they are not there already
                 for destination in self.edges[block_name]['next']:
                     if destination['name'] not in fun_queue:
                         fun_queue.append(destination['name'])
+
+        return final_results
