@@ -19,7 +19,7 @@ import typing
 
 @block()
 def topology(filename: str=None):
-    def inner(*input_: typing.Any) -> typing.Any:
+    def inner(*input_: typing.Any) -> typing.Dict[str, typing.Any]:
         registry = Registry(load_internal_modules=True)
         g = Graph(filename, registry)
         return g.execute()
