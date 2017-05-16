@@ -30,8 +30,13 @@ def _is_subtype(left, right):
 
     if isinstance(left, TupleMeta) and isinstance(right, TupleMeta):
         # in case of tuples on both sides, we check their items
-        left_items = left.__tuple_params__
-        right_items = right.__tuple_params__
+        if hasattr(left, '__tuple_params__'): # Python 3.5.2
+            tuple_params = '__tuple_params__'
+        else: # Python 3.5.3, 3.6
+            tuple_params = '__args__'
+        left_items = getattr(left, tuple_params)
+        right_items = getattr(right, tuple_params)
+
         if len(left_items) != len(right_items):
             return False
         return all([_is_subtype(left_item, right_item)
