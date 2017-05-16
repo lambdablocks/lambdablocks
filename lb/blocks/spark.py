@@ -17,13 +17,12 @@ from pprint import pprint
 
 from lb.registry import block
 
-spark_context = pyspark.SparkContext('local', 'testing stuff')
-
 ### INPUT BLOCKS ###
 
 @block(engine='spark')
 def readfile(filename: str=None):
     def inner() -> pyspark.rdd.RDD:
+        spark_context = pyspark.SparkContext('local', 'lambdablocks')
         o = spark_context.textFile(filename)
         return o
     return inner
