@@ -141,7 +141,11 @@ class Graph(object):
                     # the connected block producing this value:
                     producer_name, producer_subkey = input_.split('.')
                     producer_block = self.vertices[producer_name]['block']
-                    received_type = self.registry[producer_block]['_output'][producer_subkey]
+                    # in case of multiple output, a dict is returned,
+                    # and we want to know the type of the dict values
+                    received_type = lb.types.type_of_mapping_values(
+                        self.registry[producer_block]['_output'])
+
                 else: # single output
                     # the connected block producing this value:
                     producer_block = self.vertices[input_]['block']

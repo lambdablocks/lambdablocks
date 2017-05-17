@@ -17,9 +17,9 @@ Types manipulation.  This module defines functions to check for types
 compatibility.
 """
 
-from typing import Tuple, TupleMeta, Any
+from typing import Tuple, TupleMeta, Any, Mapping
 
-def _is_subtype(left, right):
+def is_subtype(left, right):
     """
     Checks if left is a subtype of right, i.e. if they are compatible.
     Currently implemented: basic types, Tuple
@@ -39,7 +39,7 @@ def _is_subtype(left, right):
 
         if len(left_items) != len(right_items):
             return False
-        return all([_is_subtype(left_item, right_item)
+        return all([is_subtype(left_item, right_item)
                     for (left_item, right_item)
                     in zip(left_items, right_items)])
 
@@ -48,7 +48,7 @@ def _is_subtype(left, right):
         return False
 
     # either a base type, or something else not supported
-    return left == right
+    return issubclass(left, right)
 
 def is_sig_compatible(left, right):
     """
@@ -77,7 +77,7 @@ def is_sig_compatible(left, right):
         elif len(tup) == 5:
             return Tuple[tup[0], tup[1], tup[2], tup[3], tup[4]]
 
-    return _is_subtype(to_tuple_type(left), to_tuple_type(right))
+    return is_subtype(to_tuple_type(left), to_tuple_type(right))
 
 def is_instance(var, type_):
     """
@@ -88,3 +88,11 @@ def is_instance(var, type_):
     returned by the yaml parser.
     """
     return isinstance(var, type_)
+
+def type_of_mapping_values(type_):
+    """
+    Given a Mapping type, returns the type of its values.
+    """
+    assert is_subtype(type_, Mapping), \
+      'Not a Mapping subtype: {}'.format(type_)
+    return type_.__args__[1]
