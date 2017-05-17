@@ -17,11 +17,11 @@ This modules provides facilities to build and run a topology graph out
 of a YAML file.
 """
 
+from collections import defaultdict, deque
+
 import inspect
 import typing
 import yaml
-
-from collections import defaultdict, deque
 
 import lb.types
 

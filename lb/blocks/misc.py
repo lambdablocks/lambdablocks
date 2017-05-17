@@ -12,10 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import typing
+
 from lb.graph import Graph
 from lb.registry import block, Registry
 
-import typing
 
 @block()
 def topology(filename: str=None):
