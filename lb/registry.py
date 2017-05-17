@@ -37,7 +37,7 @@ def block(**kwargs):
         return func
     return block_decorator
 
-class Registry:
+class Registry(object):
     """
     A registry contains a list of registered blocks, along with their
     inferred properties, such as their parameters, metadata, inputs

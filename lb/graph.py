@@ -34,7 +34,7 @@ def type_or_any(type_):
         return typing.Any
     return type_
 
-class Graph:
+class Graph(object):
     def __init__(self, filename, registry):
         """
         Initializes a DAG for execution, provided a YAML file
