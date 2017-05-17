@@ -43,7 +43,7 @@ def is_subtype(left, right):
                     for (left_item, right_item)
                     in zip(left_items, right_items)])
 
-    if isinstance(left, TupleMeta) or isinstance(right, TupleMeta):
+    if isinstance(left, TupleMeta) != isinstance(right, TupleMeta):
         # tuple only on one side, not compatible
         return False
 
