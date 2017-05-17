@@ -139,7 +139,7 @@ class Graph(object):
             for input_ in props['inputs']:
                 if '.' in input_: # multiple output
                     # the connected block producing this value:
-                    producer_name, producer_subkey = input_.split('.')
+                    producer_name = input_.split('.')[0]
                     producer_block = self.vertices[producer_name]['block']
                     # in case of multiple output, a dict is returned,
                     # and we want to know the type of the dict values
