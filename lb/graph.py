@@ -223,7 +223,7 @@ class Graph(object):
                         get_input = lambda results: results[input_['name']][input_['value']]
                     try:
                         comp_inputs.append(get_input(results))
-                    except KeyError as e:
+                    except KeyError:
                         raise Exception('%s was scheduled for execution, but lacks some inputs: %s'
                                         % (block_name, str(self.vertices[block_name]['inputs'])))
                 results[block_name] = comp_fun(**comp_args)(*comp_inputs)
