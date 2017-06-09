@@ -52,7 +52,7 @@ software skills.
 ## Run examples
 
 ```
-python3 bin/blocks.py -f examples/wordcount.yml
+python3 bin/blocks.py -f examples/display_wordcount.yml
 ```
 
 ## Generate documentation for registered blocks

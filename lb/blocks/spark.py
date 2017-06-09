@@ -16,15 +16,17 @@ from pprint import pprint
 import pyspark
 
 from lb.registry import block
+from lb.types import ReturnType
+from lb.utils import ReturnEntry
 
 ### INPUT BLOCKS ###
 
 @block(engine='spark')
 def readfile(filename: str=None):
-    def inner() -> pyspark.rdd.RDD:
+    def inner() -> ReturnType[pyspark.rdd.RDD]:
         spark_context = pyspark.SparkContext('local', 'lambdablocks')
         o = spark_context.textFile(filename)
-        return o
+        return ReturnEntry(result=o)
     return inner
 
 ### MIDDLE BLOCKS ###
@@ -32,71 +34,71 @@ def readfile(filename: str=None):
 @block(engine='spark',
        description='Converts a line of text into a list of lower-case words.')
 def text_to_words():
-    def inner(line: pyspark.rdd.RDD) -> pyspark.rdd.RDD:
+    def inner(line: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
         o = line.map(lambda x: x.lower())
 
         for sep in [',', '.', '!', '?', ';', '"', "'"]:
             o = o.map((lambda sep: lambda x: x.replace(sep, ''))(sep))
 
         o = o.flatMap(lambda x: x.split())
-        return o
+        return ReturnEntry(result=o)
     return inner
 
 @block(engine='spark')
 def map_with_one():
-    def inner(input_: pyspark.rdd.RDD) -> pyspark.rdd.RDD:
-        o = input_.map(lambda el: (el, 1))
-        return o
+    def inner(data: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
+        o = data.map(lambda el: (el, 1))
+        return ReturnEntry(result=o)
     return inner
 
 @block(engine='spark')
 def add():
-    def inner(input_: pyspark.rdd.RDD) -> pyspark.rdd.RDD:
-        o = input_.reduceByKey(lambda a,b: a+b)
-        return o
+    def inner(data: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
+        o = data.reduceByKey(lambda a,b: a+b)
+        return ReturnEntry(result=o)
     return inner
 
 @block(engine='spark')
 def swap():
-    def inner(input_: pyspark.rdd.RDD) -> pyspark.rdd.RDD:
-        o = input_.map(lambda x: (x[1],x[0]))
-        return o
+    def inner(data: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
+        o = data.map(lambda x: (x[1],x[0]))
+        return ReturnEntry(result=o)
     return inner
 
 @block(engine='spark')
 def sort():
-    def inner(input_: pyspark.rdd.RDD) -> pyspark.rdd.RDD:
-        o = input_.sortByKey(ascending=False)
-        return o
+    def inner(data: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
+        o = data.sortByKey(ascending=False)
+        return ReturnEntry(result=o)
     return inner
 
 @block(engine='spark')
 def first_n(n: int=0):
-    def inner(input_: pyspark.rdd.RDD) -> list:
-        o = input_.take(n)
-        return o
+    def inner(data: pyspark.rdd.RDD) -> ReturnType[list]:
+        o = data.take(n)
+        return ReturnEntry(result=o)
     return inner
 
 @block(engine='spark')
 def union():
-    def inner(first: pyspark.rdd.RDD, second: pyspark.rdd.RDD) -> pyspark.rdd.RDD:
-        return first.union(second)
+    def inner(first: pyspark.rdd.RDD, second: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
+        return ReturnEntry(result=first.union(second))
     return inner
 
 @block(engine='spark')
 def split(ratio: float=0.5):
-    def inner(input_: pyspark.rdd.RDD) -> {'first': pyspark.rdd.RDD, 'second': pyspark.rdd.RDD}:
-        first = input_.filter(lambda x: x[1][0] == 's') # todo
-        second = input_.filter(lambda x: x[1][0] != 's')
-        return {'first': first, 'second': second}
+    def inner(data: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
+        first = data.filter(lambda x: x[1][0] == 's') # todo
+        second = data.filter(lambda x: x[1][0] != 's')
+        return ReturnEntry(first=first, second=second)
     return inner
 
 ### OUTPUT BLOCKS ###
 
 @block(engine='spark')
 def show_console():
-    def inner(input_: list) -> None:
-        o = input_
+    def inner(struct: list) -> None:
+        o = struct
         print('\033[92m')
         pprint(o)
         print('\033[0m')

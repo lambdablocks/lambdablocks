@@ -16,12 +16,19 @@ import typing
 
 from lb.graph import Graph
 from lb.registry import block, Registry
-
+from lb.types import ReturnType
+from lb.utils import ReturnEntry
 
 @block()
-def topology(filename: str=None):
-    def inner(*input_: typing.Any) -> typing.Mapping[str, typing.Any]:
+def topology(filename: str=None,
+             bind_out: typing.Mapping[str, str]={}):
+    def inner(**inputs: typing.Any) -> ReturnType[typing.Any]:
         registry = Registry(load_internal_modules=True)
-        g = Graph(filename, registry)
-        return g.execute()
+        g = Graph(filename, registry, inputs=inputs)
+        results = g.execute()
+        filtered_results = {}
+        for k, v in bind_out.items():
+            blockname, value = v.split('.')
+            filtered_results[k] = getattr(results[blockname], value)
+        return ReturnEntry(**filtered_results)
     return inner

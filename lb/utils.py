@@ -12,18 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import matplotlib.pyplot as plt
+"""
+Misc. utilities.
+"""
 
-from lb.registry import block
+from collections import namedtuple
 
-@block(engine='matplotlib')
-def plot_bars():
-    def inner(bar_values: list) -> None:
-        axis_y = [x[0] for x in bar_values]
-        axis_x = range(len(axis_y))
-        labels = [x[1] for x in bar_values]
-        plt.xticks(axis_x, labels, rotation='vertical')
-        plt.bar(left=range(len(axis_y)), height=axis_y)
-        plt.show()
-        return None
-    return inner
+def ReturnEntry(**kwargs):
+    R = namedtuple('R', kwargs.keys())
+    return R(**kwargs)

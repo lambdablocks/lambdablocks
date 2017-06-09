@@ -2,41 +2,34 @@
 - name: Wordcount
 - description: Gives the top 5 words along with their number of occurences
 ---
-- block: readfile
-  name: readfile
-  args:
-    filename: examples/loremipsum
-
 - block: text_to_words
   name: text_to_words
-  inputs: [readfile]
+  inputs:
+    line: $inputs.data
 
 - block: map_with_one
   name: map_with_one
-  inputs: [text_to_words]
+  inputs:
+    data: text_to_words.result
 
 - block: add
   name: add
-  inputs: [map_with_one]
+  inputs:
+    data: map_with_one.result
 
 - block: swap
   name: swap
-  inputs: [add]
+  inputs:
+    data: add.result
 
 - block: sort
   name: sort
-  inputs: [swap]
+  inputs:
+    data: swap.result
 
 - block: first_n
   name: first_5
-  inputs: [sort]
+  inputs:
+    data: sort.result
   args:
     n: 5
-
-- block: show_console
-  name: show_console
-  inputs: [first_5]
-
-- block: plot_bars
-  name: plot_bars
-  inputs: [first_5]

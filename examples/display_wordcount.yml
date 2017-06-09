@@ -1,0 +1,25 @@
+---
+- name: Display wordcount
+- description: foo
+---
+- block: readfile
+  name: readfile
+  args:
+    filename: examples/loremipsum
+
+- topology: examples/wordcount.yml
+  name: wordcount
+  bind_in:
+    data: readfile.result
+  bind_out:
+    res: first_5.result
+
+- block: show_console
+  name: show_console
+  inputs:
+    struct: wordcount.res
+
+- block: plot_bars
+  name: plot_bars
+  inputs:
+    bar_values: wordcount.res

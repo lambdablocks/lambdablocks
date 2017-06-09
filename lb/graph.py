@@ -20,6 +20,7 @@ of a YAML file.
 from collections import defaultdict, deque
 
 import inspect
+import os.path
 import typing
 import yaml
 
@@ -34,7 +35,96 @@ def type_or_any(type_):
         return typing.Any
     return type_
 
+class _Section(object):
+    """
+    Container for a section of the YAML file, containing its fields.
+    """
+    def __init__(self, fields):
+        self.fields = fields
+
+class Vertice(_Section):
+    """
+    Container for a vertice, a block as defined in YAML.  Also holds
+    its directed edges with other blocks.
+    """
+    def __init__(self, fields):
+        super().__init__(fields)
+
+        if 'inputs' not in self.fields.keys():
+            self.fields['inputs'] = {}
+        if 'args' not in self.fields.keys():
+            self.fields['args'] = {}
+
+        self.prev_vertices = []
+        self.next_vertices = []
+
+    def add_prev(self, connector):
+        self.prev_vertices.append(connector)
+
+    def add_next(self, connector):
+        self.next_vertices.append(connector)
+
+class Topology(_Section):
+    """
+    Container for a topology, as defined in YAML.  Mainly used to
+    encapsulate a Graph.
+    """
+    def __init__(self, fields, registry):
+        super().__init__(fields)
+
+        if 'bind_in' not in self.fields.keys():
+            self.fields['bind_in'] = {}
+        if 'bind_out' not in self.fields.keys():
+            self.fields['bind_out'] = {}
+
+        # we create the subgraph
+        self.graph = Graph(self.fields['topology'], registry)
+
+    def get_outbound(self, value):
+        """
+        Given a bind_out value, returns the associated block along
+        with its wanted result.
+        """
+        if value not in self.fields['bind_out']:
+            raise Exception('The value {} is not bound for topology {}.'.format(
+                value, self.fields['name']))
+        producer, value = self.fields['bind_out'][value].split('.')
+        producer = self.graph.vertices[producer]
+
+        return producer, value
+
+    def vertices(self):
+        """
+        Returns the vertices of the encapsulated graph.
+        """
+        return self.graph.vertices
+
+    def topology_inputs(self):
+        """
+        Returns the topology_inputs ($inputs.*) of the encapsulated graph.
+        """
+        return self.graph.topology_inputs
+
+class Connector(object):
+    """
+    Represents a connection in a block.
+
+    A connection links an output block and one of its return value (a
+    field name of the returned dict) with an input block and one of
+    its input value (a parameter name).
+    """
+    def __init__(self, block_from, value_from, block_dest, value_dest):
+        self.block_from = block_from
+        self.value_from = value_from
+        self.block_dest = block_dest
+        self.value_dest = value_dest
+
+
 class Graph(object):
+    """
+    Builds, stores, checks and executes a DAG from a YAML topology
+    file.
+    """
     def __init__(self, filename, registry):
         """
         Initializes a DAG for execution, provided a YAML file
@@ -45,6 +135,11 @@ class Graph(object):
         self._parse_file()
         self._check_yaml()
         self._build_dag()
+
+    def check(self):
+        """
+        Checks the input/output types, and ensures there are no loops in the DAG.
+        """
         self._check_dag_types()
         self._check_dag_no_loops()
 
@@ -57,109 +152,159 @@ class Graph(object):
             assert len(documents) == 2, \
                 'YAML file must contain 2 documents: metadata, and DAG description.'
             self.dag_metadata = documents[0]
-            self.blocks = documents[1]
+            self.dag_as_yaml = documents[1]
 
     def _build_dag(self):
         """
-        Builds a DAG from a list of blocks and their inputs.
+        Creates the DAG associated to the YAML file, recursively
+        merging the subgraphs it encounters.
         """
-        vertices = {}
-        entry_points = []
-        for block in self.blocks:
-            vertices[block['name']] = block
-            # is it a DAG entry point?
-            if 'inputs' not in block.keys() or block['inputs'] == []:
-                entry_points.append(block['name'])
-                # we still want to have an empty list to avoid KeyErrors
-                block['inputs'] = []
+        def create_edge(block_from, value_from, block_dest, value_dest):
+            c = Connector(block_from, value_from, block_dest, value_dest)
+            block_from.add_next(c)
+            block_dest.add_prev(c)
 
-        if len(entry_points) == 0:
-            raise Exception(
-                "Your topology doesn't have any entry point (a block "
-                "without any input). Nothing to execute.")
+        # assuming all names are unique, even in subgraphs, because
+        # the primary key is a block name at the moment
 
-        edges = defaultdict(lambda: {'prev': [],
-                                     'next': []})
+        vertices = {}        # holds the vertices of the graph
+        subgraphs = {}       # holds the subgraphs
+        topology_inputs = [] # holds the graph global inputs ($inputs)
+        entry_points = []    # DAG entry points, i.e. vertices without any input
 
-        for block2, block2_props in vertices.items():
-            for input_ in block2_props['inputs']:
-                # we add the vertice between block1 and block2, in both directions
-                if '.' in input_:
-                    # named output, when a block outputs multiple values
-                    try:
-                        block1, value = input_.split('.')
-                    except ValueError as e:
-                        print('Wrong input: ' + input_)
-                        raise e
+        # we create all the vertices and subgraphs
+        for section in self.dag_as_yaml:
+            if 'topology' in section.keys(): # composition with a sub-topology
+                subgraphs[section['name']] = Topology(section, self.registry)
+            elif 'block' in section.keys(): # normal block
+                vertices[section['name']] = Vertice(section)
+            else:
+                raise Exception('Malformed section, must be a block or a topology:\n{}'
+                                .format(section))
+
+        # we create the edges
+        for block_dest in vertices.values():
+            if len(block_dest.fields['inputs'].items()) == 0:
+                entry_points.append(block_dest)
+                continue
+            for value_dest, pair in block_dest.fields['inputs'].items():
+                try:
+                    block_from, value_from = pair.split('.')
+                except ValueError:
+                    raise Exception(
+                        'An input must contain a block/topology name and a value, '
+                        'such as my_block.foo. {} in block {}'.format(pair, block_dest))
+                if block_from == '$inputs':
+                    # topology input
+                    topology_inputs.append({'block_dest': block_dest,
+                                            'value_dest': value_dest,
+                                            'value_from': value_from})
                 else:
-                    # the block outputs a single value
-                    block1, value = input_, None
+                    if block_from not in vertices.keys() and block_from not in subgraphs.keys():
+                        raise Exception('Block {} has an unknown input: {}={} (no block {})'
+                                        .format(block_dest.fields['name'], value_dest, pair, block_from))
 
-                if block1 not in vertices.keys():
-                    raise Exception('Block {} has an unknown input: {}'
-                                    .format(block2, input_))
+                    if block_from in subgraphs.keys():
+                        # result of a subgraph
+                        block_from, value_from = subgraphs[block_from].get_outbound(value_from)
+                    else:
+                        block_from = vertices[block_from]
 
-                edges[block1]['next'].append({'name': block2, 'value': value})
-                edges[block2]['prev'].append({'name': block1, 'value': value})
+                    create_edge(block_from, value_from, block_dest, value_dest)
 
-        self.entry_points = entry_points
+        # we now merge all the subgraphs
+        for subgraph in subgraphs.values():
+            for ti in subgraph.topology_inputs():
+                block_from, value_from = subgraph.fields['bind_in'][ti['value_from']].split('.')
+                block_from = vertices[block_from]
+                create_edge(block_from, value_from, ti['block_dest'], ti['value_dest'])
+            vertices.update(subgraph.vertices())
+
+        # we're done
+        self.topology_inputs = topology_inputs
         self.vertices = vertices
-        self.edges = edges
+        self.entry_points = entry_points
+
+    def show_dag(self):
+        for v in self.vertices.values():
+            print(v.fields['name'])
+            print(' from:')
+            for prev in v.prev_vertices:
+                print('  {} -> {}'.format(prev.block_from.fields['name'], prev.value_from))
+            print(' to:')
+            for to in v.next_vertices:
+                print('  {} -> {}'.format(to.block_dest.fields['name'], to.value_dest))
+            print('____________________')
 
     def _check_yaml(self):
         """
         Checks that the YAML file is correctly typed.
         """
-        block_names = []
-        for block in self.blocks:
+        def assert_dict(section, key):
+            if key in section.keys():
+                assert isinstance(section[key], dict), \
+                  "Block {}'s {} is not a dict".format(section['name'], key)
+
+        section_names = []
+        for section in self.dag_as_yaml:
             # be sure every block has a name (unique) and is
             # associated to a registered block
-            assert type(block) == dict, 'Block is malformed: ' + str(block)
-            assert 'name' in block.keys(), "Block doesn't have a name: " + str(block)
-            assert 'block' in block.keys(), "Block doesn't have a block: " + str(block)
-            assert block['name'] not in block_names, 'Block name is duplicated: ' + block['name']
-            block_names.append(block['name'])
-            assert block['block'] in self.registry.keys(), "Block doesn't exist: " + block['block']
-            # check arguments' types
-            if 'args' in block.keys():
-                for name, value in block['args'].items():
-                    expected_type = self.registry[block['block']]['_parameters'][name].annotation
+            assert isinstance(section, dict), \
+              'Section is malformed: {}'.format(str(section))
+            assert 'name' in section.keys(), \
+              "Section doesn't have a name: {}".format(str(section))
+            assert section['name'] not in section_names, \
+              'Section name is duplicated: {}'.format(section['name'])
+            section_names.append(section['name'])
+
+            assert 'block' in section.keys() or 'topology' in section.keys(), \
+              'Section is not a block nor a topology: {}'.format(section)
+            if 'block' in section.keys(): # regular block
+                assert section['block'] in self.registry.keys(), \
+                    "Block doesn't exist: {}".format(section['block'])
+                assert_dict(section, 'inputs')
+
+            else: # topology
+                assert os.path.isfile(section['topology']), \
+                  "Topology file doesn't exist: {}".format(section['topology'])
+                assert_dict(section, 'bind_in')
+                assert_dict(section, 'bind_out')
+
+            # check arguments types
+            if 'args' in section.keys():
+                for name, value in section['args'].items():
+                    expected_type = self.registry[section['block']]['_parameters'][name].annotation
                     assert lb.types.is_instance(value, type_or_any(expected_type)), \
                       'Arg {} for block {} is of type {}, expected {}'.format(
-                          name, block['name'], type(value), expected_type)
+                          name, section['name'], type(value), expected_type)
 
     def _check_dag_types(self):
         """
         Checks that every output has the same type as the inputs where
         it's consumed.
         """
-        for block, props in self.vertices.items():
+        for block in self.vertices.values():
+            block_name = block.fields['block']
+
             # we collect the actual types this block receives
             received_types = []
-            for input_ in props['inputs']:
-                if '.' in input_: # multiple output
-                    # the connected block producing this value:
-                    producer_name = input_.split('.')[0]
-                    producer_block = self.vertices[producer_name]['block']
-                    # in case of multiple output, a dict is returned,
-                    # and we want to know the type of the dict values
-                    received_type = lb.types.type_of_mapping_values(
-                        self.registry[producer_block]['_output'])
+            # for input_name, input_value in props['inputs'].items():
+            for input_ in block.prev_vertices:
+                # the connected block producing this value:
+                # we want to know the type of the dict values
+                received_type = lb.types.type_of_mapping_values(
+                    self.registry[input_.block_from.fields['block']]['_output'])
 
-                else: # single output
-                    # the connected block producing this value:
-                    producer_block = self.vertices[input_]['block']
-                    received_type = self.registry[producer_block]['_output']
                 received_types.append(type_or_any(received_type))
 
             # we collect from the registry the list of expected types this
             # block is supposed to receive
             expected_types = []
-            for expected_input in self.registry[props['block']]['_inputs'].values():
+            for expected_input in self.registry[block_name]['_inputs'].values():
                 if expected_input.kind == inspect.Parameter.POSITIONAL_OR_KEYWORD:
                     # "normal" parameter
                     expected_types.append(type_or_any(expected_input.annotation))
-                elif expected_input.kind == inspect.Parameter.VAR_POSITIONAL:
+                elif expected_input.kind == inspect.Parameter.VAR_KEYWORD:
                     # "tuple" parameter, *args
                     # We fill all the remaining types with this one,
                     # considering the number of supplied parameters is correct
@@ -173,7 +318,7 @@ class Graph(object):
             assert lb.types.is_sig_compatible(
                 tuple(received_types), tuple(expected_types)), \
                 'Block {} has signature\n{}\nbut has inputs\n{}'.format(
-                    block, expected_types, received_types)
+                    block.fields['block'], expected_types, received_types)
 
     def _check_dag_no_loops(self):
         """
@@ -185,10 +330,11 @@ class Graph(object):
             while len(to_visit) > 0:
                 current_block = to_visit.popleft()
                 assert current_block not in visited, \
-                    'There is a loop in your DAG, occuring with the block {}'.format(current_block)
+                    'There is a loop in your DAG, occuring with the block {}' \
+                    .format(current_block.fields['name'])
                 visited.append(current_block)
-                for dest in self.edges[current_block]['next']:
-                    to_visit.append(dest['name'])
+                for dest in current_block.next_vertices:
+                    to_visit.append(dest.block_dest)
 
     def execute(self):
         """
@@ -196,46 +342,36 @@ class Graph(object):
         their outputs to their consumers, iteratively.
         """
         results = {}
-        final_results = {}
         fun_queue = deque(self.entry_points)
 
         while len(fun_queue) > 0:
-            block_name = fun_queue.popleft()
+            block = fun_queue.popleft()
             # do the block inputs have been computed yet?
-            for input_ in self.edges[block_name]['prev']:
-                if input_['name'] not in results.keys():
-                    fun_queue.append(block_name)
+            for input_ in block.prev_vertices:
+                if input_.block_from not in results.keys():
+                    fun_queue.append(block) # TODO: beware of endless loops loops loop loops…
                     break
             else: # ok, all inputs have been computed, we proceed
-                comp_fun = self.registry[self.vertices[block_name]['block']]['_func']
-                try:
-                    comp_args = self.vertices[block_name]['args']
-                except KeyError:
-                    comp_args = {}
+                comp_fun = self.registry[block.fields['block']]['_func']
+                comp_args = block.fields['args']
 
                 # we prepare the block's input values
-                comp_inputs = []
-                for input_ in self.edges[block_name]['prev']:
-                    if input_['value'] is None:
-                        # no named value, single output from previous block
-                        get_input = lambda results: results[input_['name']]
-                    else:
-                        get_input = lambda results: results[input_['name']][input_['value']]
+                comp_inputs = {}
+                for input_ in block.prev_vertices:
                     try:
-                        comp_inputs.append(get_input(results))
-                    except KeyError:
-                        raise Exception('%s was scheduled for execution, but lacks some inputs: %s'
-                                        % (block_name, str(self.vertices[block_name]['inputs'])))
-                results[block_name] = comp_fun(**comp_args)(*comp_inputs)
+                        this_res = getattr(results[input_.block_from], input_.value_from)
+                    except AttributeError:
+                        raise Exception('{} was scheduled for execution, but lacks some inputs: {}'
+                                        .format(block.fields['name'], input_.value_from))
 
-                # if this block has no destination, it is a final block, we store its result
-                if not self.edges[block_name]['next']:
-                    final_results[block_name] = results[block_name]
+                    comp_inputs[input_.value_dest] = this_res
+
+                results[block] = comp_fun(**comp_args)(**comp_inputs)
 
                 # we add this block's destinations to the queue,
                 # if they are not there already
-                for destination in self.edges[block_name]['next']:
-                    if destination['name'] not in fun_queue:
-                        fun_queue.append(destination['name'])
+                for destination in block.next_vertices:
+                    if destination.block_dest not in fun_queue:
+                        fun_queue.append(destination.block_dest)
 
-        return final_results
+        return results

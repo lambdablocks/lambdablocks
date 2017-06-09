@@ -17,7 +17,10 @@ Types manipulation.  This module defines functions to check for types
 compatibility.
 """
 
-from typing import Tuple, TupleMeta, Any, Mapping
+from typing import Any, Mapping, Tuple, TupleMeta, TypeVar
+
+T = TypeVar('T')
+ReturnType = Mapping[str, T]
 
 def is_subtype(left, right):
     """
@@ -87,6 +90,11 @@ def is_instance(var, type_):
     might add different type-checking later, e.g. with the types
     returned by the yaml parser.
     """
+    if hasattr(type_, '__origin__') and type_.__origin__ is not None:
+        # this is to avoid "TypeError: Parameterized generics cannot
+        # be used with class or instance checks", so we we don't
+        # currently check the parameterized types
+        type_ = type_.__origin__
     return isinstance(var, type_)
 
 def type_of_mapping_values(type_):
@@ -95,4 +103,4 @@ def type_of_mapping_values(type_):
     """
     assert is_subtype(type_, Mapping), \
       'Not a Mapping subtype: {}'.format(type_)
-    return type_.__args__[1]
+    return type_.__args__[0]
