@@ -1,6 +1,6 @@
 ---
-- name: Display wordcount
-- description: foo
+name: Display wordcount
+description: foo
 ---
 - block: readfile
   name: readfile
