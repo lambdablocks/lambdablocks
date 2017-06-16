@@ -126,12 +126,16 @@ class Graph(object):
     Builds, stores, checks and executes a DAG from a YAML topology
     file.
     """
-    def __init__(self, filename, registry):
+    def __init__(self, filename=None, filecontent=None, registry=None):
         """
         Initializes a DAG for execution, provided a YAML file
         containing it, and a blocks registry.
         """
+        assert filename is None or filecontent is None, \
+          'Either filename or filecontent must be provided, not both.'
+
         self.filename = filename
+        self.filecontent = filecontent
         self.registry = registry
         self._parse_file()
         self._check_yaml()
@@ -148,12 +152,18 @@ class Graph(object):
         """
         Parses a YAML file defining a DAG.
         """
-        with open(self.filename) as f:
-            documents = list(yaml.safe_load_all(f))
+        def parse(content):
+            documents = list(yaml.safe_load_all(content))
             assert len(documents) == 2, \
                 'YAML file must contain 2 documents: metadata, and DAG description.'
             self.dag_metadata = documents[0]
             self.dag_as_yaml = documents[1]
+
+        if self.filename is not None:
+            with open(self.filename) as f:
+                parse(f)
+        else:
+            parse(self.filecontent)
 
     def _build_dag(self):
         """
