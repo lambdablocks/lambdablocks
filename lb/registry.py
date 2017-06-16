@@ -23,6 +23,7 @@ import inspect
 import pkgutil
 
 import lb.blocks
+from lb.exceptions import BlockError, UnfoundModuleError
 
 def block(**kwargs):
     """
@@ -59,7 +60,10 @@ class Registry(object):
         else:
             internal_modules = []
         for module in internal_modules + external_modules:
-            mod = importlib.import_module(module)
+            try:
+                mod = importlib.import_module(module)
+            except ImportError:
+                raise UnfoundModuleError('The module {} has not been found.'.format(module))
             for _, func in mod.__dict__.items():
                 if hasattr(func, '_is_block') and func._is_block:
                     self._register_block(func)
