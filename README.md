@@ -38,9 +38,13 @@ software skills.
 
 ## Dependencies
 
+On Debian:
+
 * python3
 * python3-yaml
 * python3-matplotlib
+* python3-nose2
+* python3-nose2-cov
 * Apache Spark and pyspark
 
 ## Pre-requisites
