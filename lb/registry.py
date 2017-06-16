@@ -74,16 +74,16 @@ class Registry(object):
         if callable(func):
             sig_outer = inspect.signature(func)
         else:
-            raise Exception('Malformed block: ' + name)
+            raise BlockError('Malformed block: {}'.format(name))
         # gets the inner function  parameters
         inner = func()
         if callable(inner):
             sig_inner = inspect.signature(inner)
         else:
-            raise Exception('Malformed block: ' + name)
+            raise BlockError('Malformed block: {}'.format(name))
         # registers the block
         if name in self.blocks.keys():
-            raise Exception('Duplicated block name: ' + name)
+            raise BlockError('Duplicated block name: {}'.format(name))
         else:
             self.blocks[name] = {
                 '_func':   func,

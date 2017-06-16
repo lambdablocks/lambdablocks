@@ -25,6 +25,7 @@ import typing
 import yaml
 
 import lb.types
+from lb.exceptions import NotBoundError, YAMLError, ExecutionError
 
 def type_or_any(type_):
     """
@@ -86,7 +87,7 @@ class Topology(_Section):
         with its wanted result.
         """
         if value not in self.fields['bind_out']:
-            raise Exception('The value {} is not bound for topology {}.'.format(
+            raise NotBoundError('The value {} is not bound for topology {}.'.format(
                 value, self.fields['name']))
         producer, value = self.fields['bind_out'][value].split('.')
         producer = self.graph.vertices[producer]
@@ -174,13 +175,13 @@ class Graph(object):
 
         # we create all the vertices and subgraphs
         for section in self.dag_as_yaml:
+            assert 'topology' in section.keys() or 'block' in section.keys(), \
+              'Malformed section, must be a block or a topology:\n{}' \
+                .format(section)
             if 'topology' in section.keys(): # composition with a sub-topology
                 subgraphs[section['name']] = Topology(section, self.registry)
             elif 'block' in section.keys(): # normal block
                 vertices[section['name']] = Vertice(section)
-            else:
-                raise Exception('Malformed section, must be a block or a topology:\n{}'
-                                .format(section))
 
         # we create the edges
         for block_dest in vertices.values():
@@ -191,7 +192,7 @@ class Graph(object):
                 try:
                     block_from, value_from = pair.split('.')
                 except ValueError:
-                    raise Exception(
+                    raise YAMLError(
                         'An input must contain a block/topology name and a value, '
                         'such as my_block.foo. {} in block {}'.format(pair, block_dest))
                 if block_from == '$inputs':
@@ -201,7 +202,7 @@ class Graph(object):
                                             'value_from': value_from})
                 else:
                     if block_from not in vertices.keys() and block_from not in subgraphs.keys():
-                        raise Exception('Block {} has an unknown input: {}={} (no block {})'
+                        raise YAMLError('Block {} has an unknown input: {}={} (no block {})'
                                         .format(block_dest.fields['name'], value_dest, pair, block_from))
 
                     if block_from in subgraphs.keys():
@@ -361,7 +362,7 @@ class Graph(object):
                     try:
                         this_res = getattr(results[input_.block_from], input_.value_from)
                     except AttributeError:
-                        raise Exception('{} was scheduled for execution, but lacks some inputs: {}'
+                        raise ExecutionError('{} was scheduled for execution, but lacks some inputs: {}'
                                         .format(block.fields['name'], input_.value_from))
 
                     comp_inputs[input_.value_dest] = this_res
