@@ -157,6 +157,8 @@ class Graph(object):
             assert len(documents) == 2, \
                 'YAML file must contain 2 documents: metadata, and DAG description.'
             self.dag_metadata = documents[0]
+            assert documents[1] != None, \
+                "The topology doesn't define any block."
             self.dag_as_yaml = documents[1]
 
         if self.filename is not None:
