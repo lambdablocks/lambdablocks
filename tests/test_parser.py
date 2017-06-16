@@ -12,6 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+This module makes tests about the YAML parser/graph builder.
+
+If someone is reading this, cheers!  You're either curious or you're
+adding tests to lambda blocks.  That's great.  Here's a joke for your
+trouble: "There are two difficult problems in computer science: cache
+invalidation, naming things, and off-by-one errors."
+"""
+
 from lb.graph import Graph
 from lb.registry import Registry
 
@@ -78,3 +87,29 @@ class TestParser(unittest.TestCase):
         """)
         with self.assertRaisesRegex(AssertionError, "doesn't exist"):
             g = Graph(filecontent=content, registry=self.registry)
+
+    def test_correct_graph(self):
+        content = textwrap.dedent("""
+        ---
+        ---
+        - block: input
+          name: input
+        - block: sometimes_reverse
+          name: sometimes_reverse
+          args:
+            reverse: true
+          inputs:
+            data: input.result
+        - block: output_screen
+          name: output_screen
+          inputs:
+            data: sometimes_reverse.result
+        """)
+        g = Graph(filecontent = content, registry=self.registry)
+        assert g.topology_inputs == []
+        assert len(g.vertices) == 3
+        assert len(g.entry_points) == 1
+        assert len(g.vertices['sometimes_reverse'].prev_vertices) == 1
+        assert g.vertices['sometimes_reverse'].prev_vertices[0].block_from == g.vertices['input']
+        assert len(g.vertices['sometimes_reverse'].next_vertices) == 1
+        assert g.vertices['sometimes_reverse'].next_vertices[0].block_dest == g.vertices['output_screen']

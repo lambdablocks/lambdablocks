@@ -12,10 +12,36 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from typing import List
+
 from lb.registry import block
+from lb.types import ReturnType
+from lb.utils import ReturnEntry
 
 @block()
 def input():
-    def inner():
-        return [1,2,3]
+    def inner() -> ReturnType[List[int]]:
+        return ReturnEntry(result=[1,2,3])
+    return inner
+
+@block()
+def sometimes_reverse(reverse: bool=False):
+    def inner(data: List[int]) -> List[int]:
+        if reverse:
+            res = [data[x] for x in range(len(data) - 1, -1, -1)]
+        else:
+            res = data
+        return ReturnEntry(result=res)
+    return inner
+
+@block()
+def output_screen():
+    def inner(data: List[int]) -> None:
+        print(data)
+    return inner
+
+@block()
+def merge_lists():
+    def inner(data1: List[int], data2: List[int]) -> ReturnType[List[int]]:
+        return ReturnEntry(result=data1 + data2)
     return inner
