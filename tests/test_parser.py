@@ -20,7 +20,7 @@ import unittest
 
 class TestParser(unittest.TestCase):
     def setUp(self):
-        self.registry = Registry(load_internal_modules=True)
+        self.registry = Registry(load_internal_modules=False, external_modules=['tests.blocks'])
 
     def tearDown(self):
         pass
