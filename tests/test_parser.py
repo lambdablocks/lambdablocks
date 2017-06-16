@@ -69,3 +69,12 @@ class TestParser(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, 'not a block nor a topology'):
             g = Graph(filecontent = content, registry=self.registry)
 
+    def test_unexisting_block(self):
+        content = textwrap.dedent("""
+        ---
+        ---
+        - block: to_be_or_not_to_be
+          name: foo
+        """)
+        with self.assertRaisesRegex(AssertionError, "doesn't exist"):
+            g = Graph(filecontent = content, registry=self.registry)
