@@ -36,3 +36,8 @@ class BlockError(Exception):
     """
     Error in a block definition.
     """
+
+class UnfoundModuleError(Exception):
+    """
+    A blocks module was added to the import list but doesn't exist.
+    """
