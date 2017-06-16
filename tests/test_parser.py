@@ -28,7 +28,44 @@ class TestParser(unittest.TestCase):
     def test_one_yaml_section(self):
         content = textwrap.dedent("""
         ---
-        name: lala
+        name: foo
         """)
-        with self.assertRaises(AssertionError):
+        with self.assertRaisesRegex(AssertionError, 'must contain 2 documents'):
             g = Graph(filecontent = content, registry=self.registry)
+
+    def test_empty_yaml(self):
+        content = textwrap.dedent("""
+        ---
+        ---
+        """)
+        with self.assertRaisesRegex(AssertionError, "topology doesn't define any block"):
+            g = Graph(filecontent = content, registry=self.registry)
+
+    def test_malformed_section(self):
+        content = textwrap.dedent("""
+        ---
+        ---
+        foo: bar
+        """)
+        with self.assertRaisesRegex(AssertionError, 'malformed: foo'):
+            g = Graph(filecontent = content, registry=self.registry)
+
+    def test_unnamed_section(self):
+        content = textwrap.dedent("""
+        ---
+        ---
+        - block: foo
+        """)
+        with self.assertRaisesRegex(AssertionError, "doesn't have a name"):
+            g = Graph(filecontent = content, registry=self.registry)
+
+    def test_not_topology_or_block(self):
+        content = textwrap.dedent("""
+        ---
+        ---
+        - name: foo
+          whatami: even
+        """)
+        with self.assertRaisesRegex(AssertionError, 'not a block nor a topology'):
+            g = Graph(filecontent = content, registry=self.registry)
+
