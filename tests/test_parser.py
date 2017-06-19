@@ -113,3 +113,23 @@ class TestParser(unittest.TestCase):
         assert g.vertices['sometimes_reverse'].prev_vertices[0].block_from == g.vertices['input']
         assert len(g.vertices['sometimes_reverse'].next_vertices) == 1
         assert g.vertices['sometimes_reverse'].next_vertices[0].block_dest == g.vertices['output_screen']
+
+    def test_dag_loop(self):
+        content = textwrap.dedent("""
+        ---
+        ---
+        - block: input
+          name: input
+        - block: merge_lists
+          name: merge_lists
+          inputs:
+            data1: input.result
+            data2: sometimes_reverse.result
+        - block: sometimes_reverse
+          name: sometimes_reverse
+          inputs:
+            data: merge_lists.result
+        """)
+        g = Graph(filecontent = content, registry=self.registry)
+        with self.assertRaisesRegex(AssertionError, 'There is a loop'):
+            g.check()
