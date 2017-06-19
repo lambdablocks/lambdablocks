@@ -3,3 +3,4 @@ derby.log
 metastore_db/
 *~
 .coverage
+htmlcov
