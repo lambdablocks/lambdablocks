@@ -25,7 +25,7 @@ ReturnType = Mapping[str, T]
 def is_subtype(left, right):
     """
     Checks if left is a subtype of right, i.e. if they are compatible.
-    Currently implemented: basic types, Tuple
+    Currently implemented: basic types, Tuple, List
     """
     if left is Any or right is Any:
         # Any is compatible with everything, on both sides
@@ -48,6 +48,22 @@ def is_subtype(left, right):
 
     if isinstance(left, TupleMeta) != isinstance(right, TupleMeta):
         # tuple only on one side, not compatible
+        return False
+
+    def is_list_type(t):
+        """ Hack to know if a type is typing.List[T] """
+        if hasattr(t, '__base__'):
+            if t.__base__ == list:
+                return True
+        return False
+
+    if is_list_type(left) and is_list_type(right):
+        # extract the list type to avoid
+        # TypeError: Parameterized generics cannot be used with class or instance checks
+        return is_subtype(left.__args__[0], right.__args__[0])
+
+    if is_list_type(left) != is_list_type(right):
+        # List only on one side, not compatible
         return False
 
     # either a base type, or something else not supported
