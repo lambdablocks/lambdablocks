@@ -26,7 +26,7 @@ def input():
 
 @block()
 def sometimes_reverse(reverse: bool=False):
-    def inner(data: List[int]) -> List[int]:
+    def inner(data: List[int]) -> ReturnType[List[int]]:
         if reverse:
             res = [data[x] for x in range(len(data) - 1, -1, -1)]
         else:
