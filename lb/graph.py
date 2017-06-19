@@ -305,8 +305,13 @@ class Graph(object):
             for input_ in block.prev_vertices:
                 # the connected block producing this value:
                 # we want to know the type of the dict values
-                received_type = lb.types.type_of_mapping_values(
-                    self.registry[input_.block_from.fields['block']]['_output'])
+                try:
+                    received_type = lb.types.type_of_mapping_values(
+                        self.registry[input_.block_from.fields['block']]['_output'])
+                except AssertionError as e:
+                    print("Warning: {} doesn't seem to return a ReturnEntry of type ReturnType." \
+                          .format(input_.block_from.fields['name']))
+                    raise e
 
                 received_types.append(type_or_any(received_type))
 
