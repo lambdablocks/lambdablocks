@@ -21,6 +21,7 @@ trouble: "There are two difficult problems in computer science: cache
 invalidation, naming things, and off-by-one errors."
 """
 
+from lb.exceptions import YAMLError
 from lb.graph import Graph
 from lb.registry import Registry
 
@@ -88,6 +89,18 @@ class TestParser(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, "doesn't exist"):
             g = Graph(filecontent=content, registry=self.registry)
 
+    def test_unknown_input(self):
+        content = textwrap.dedent("""
+        ---
+        ---
+        - block: sometimes_reverse
+          name: sometimes_reverse
+          inputs:
+            data: foo.bar
+        """)
+        with self.assertRaisesRegex(YAMLError, 'unknown input: data=foo.bar'):
+            g = Graph(filecontent=content, registry=self.registry)
+
     def test_correct_graph(self):
         content = textwrap.dedent("""
         ---
@@ -133,3 +146,39 @@ class TestParser(unittest.TestCase):
         g = Graph(filecontent = content, registry=self.registry)
         with self.assertRaisesRegex(AssertionError, 'There is a loop'):
             g.check()
+
+    def test_dag_wrong_types(self):
+        content = textwrap.dedent("""
+        ---
+        ---
+        - block: input_str
+          name: input_str
+        - block: sometimes_reverse
+          name: sometimes_reverse
+          inputs:
+            data: input_str.result
+        """)
+        g = Graph(filecontent = content, registry=self.registry)
+        with self.assertRaisesRegex(AssertionError, 'Block sometimes_reverse has signature'):
+            g.check()
+
+    def test_trivial_execution(self):
+        content = textwrap.dedent("""
+        ---
+        ---
+        - block: input
+          name: input
+        - block: sometimes_reverse
+          name: sometimes_reverse
+          args:
+            reverse: true
+          inputs:
+            data: input.result
+        """)
+        g = Graph(filecontent = content, registry=self.registry)
+        g.check()
+        results = g.execute()
+        sr_results = results[g.vertices['sometimes_reverse']]
+        assert getattr(sr_results, 'result') == [3,2,1]
+
+# todo, missing: test embedded topologies

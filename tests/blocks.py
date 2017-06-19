@@ -25,6 +25,12 @@ def input():
     return inner
 
 @block()
+def input_str():
+    def inner() -> ReturnType[List[str]]:
+        return ReturnEntry(result=['a','b','c'])
+    return inner
+
+@block()
 def sometimes_reverse(reverse: bool=False):
     def inner(data: List[int]) -> ReturnType[List[int]]:
         if reverse:
