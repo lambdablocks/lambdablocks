@@ -1,28 +1,21 @@
 # Lambda blocks
 
-λ-blocks is a library to easily run data analysis programs.
+## Introduction
 
-It is composed of a registry of predefined "blocks", and it is easy to
-add your own blocks using Python.
+λ-blocks is a framework to easily run data processing programs.
 
-A block is a snippet of code performing one of these 3 actions:
-
-* Generate data, for example from a file on disk on from an API.
-* Transform data, for example filtering useless lines, counting,
-  aggregating, feeding an ML engine, etc.
-* Storing results, for example in a file or a plot.
+It allows to declaratively describe a list of actions to take on an
+input dataset, and get results. The list of actions is actually a DAG,
+a directed acyclic graph, a powerful data structure often used to
+internally represent data processing programs. Every action is
+associated to a block, a piece of code (usually a function) that
+performs a particular task.
 
 λ-blocks runs on top of distributed (or not) data analysis engines,
 such as Apache Spark, so it leverages all the distributed and
 fault-tolerance mechanisms present in these frameworks. In fact, it
 can use any framework (and combine them). It is simply a way to
 organize and compose your blocks of code together.
-
-A topology is written in YAML, and describes the pipeline of blocks
-through which your data will flow and will be computed. Using a simple
-format allows for many ways to write data analysis programs: writing
-(and sharing) YAML, or using a graphical interface to compose your
-topology.
 
 To sum-up, λ-blocks has the following benefits:
 
@@ -31,36 +24,46 @@ To sum-up, λ-blocks has the following benefits:
 * parametrisable, reusable and composable code snippets (blocks) which
   allow easy data mining, data exploration, and pipelining,
 * composition of frameworks such as large-scale data analysis engines
-  or plot engines.
+  or plot engines,
+* DAG as a first-class citizen, to allow complex DAG manipulations and
+  optimizations.
 
-We aim to enable large-scale data analysis for everyone, without
-software skills.
+This repository contains the reference implementation of λ-blocks,
+which uses YAML as the DAG description format, and Python3 as the
+programming language for blocks. The engine itself is written in
+Python3. However, it is possible (and encouraged) to write other
+implementations with different language choices.
 
-## Dependencies
+## How to install
 
-On Debian:
+### Debian dependencies
 
-* python3
-* python3-yaml
-* python3-matplotlib
-* python3-nose2
-* python3-nose2-cov
-* Apache Spark and pyspark
+Python libraries:
+`apt install python3 python3-yaml python3-matplotlib python3-nose2 python3-nose2-cov`
 
-## Pre-requisites
+If you want to write topologies based on Spark, you need to install
+Spark and pyspark.
+
+### Other systems
+
+The Python dependencies are all part of Pypi and installable through
+`pip`. It should work on all UNIX-based systems, and, who knows, on
+Windows. Be sure to report installation failures/successes on
+different systems!
+
+### Running tests
 
 * Be sure to have all dependencies installed, system-wide or in a
   virtualenv.
 * `source env.sh`
+* `make test`
 
-## Run examples
+## Examples
+
+The folder `examples` shows some basic examples of what you can do
+with λ-blocks. To run them:
 
 ```
+source env.sh
 python3 bin/blocks.py -f examples/display_wordcount.yml
-```
-
-## Generate documentation for registered blocks
-
-```
-python3 bin/doc.py 2>/dev/null
 ```
