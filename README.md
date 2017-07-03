@@ -51,6 +51,12 @@ The Python dependencies are all part of Pypi and installable through
 Windows. Be sure to report installation failures/successes on
 different systems!
 
+### Getting λ-blocks
+
+At the moment, the best way to get λ-blocks locally is to clone this
+repository. After installing the dependencies, everything should work
+out of the box.
+
 ### Running tests
 
 * Be sure to have all dependencies installed, system-wide or in a
