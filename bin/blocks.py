@@ -41,7 +41,7 @@ def main():
     registry = Registry(external_modules=args.modules,
                        load_internal_modules=args.no_internal_modules)
 
-    g = Graph(args.filename, registry)
+    g = Graph(filename=args.filename, registry=registry)
     g.check()
     g.execute()
 
