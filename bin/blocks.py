@@ -42,7 +42,6 @@ def main():
                        load_internal_modules=args.no_internal_modules)
 
     g = Graph(filename=args.filename, registry=registry)
-    g.check()
     g.execute()
 
 if __name__ == '__main__':

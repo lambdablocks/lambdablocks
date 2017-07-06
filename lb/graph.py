@@ -140,11 +140,6 @@ class Graph(object):
         self._parse_file()
         self._check_yaml()
         self._build_dag()
-
-    def check(self):
-        """
-        Checks the input/output types, and ensures there are no loops in the DAG.
-        """
         self._check_dag_types()
         self._check_dag_no_loops()
 
