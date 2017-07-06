@@ -296,7 +296,6 @@ class Graph(object):
 
             # we collect the actual types this block receives
             received_types = []
-            # for input_name, input_value in props['inputs'].items():
             for input_ in block.prev_vertices:
                 # the connected block producing this value:
                 # we want to know the type of the dict values
