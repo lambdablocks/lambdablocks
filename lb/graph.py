@@ -120,6 +120,10 @@ class Connector(object):
         self.block_dest = block_dest
         self.value_dest = value_dest
 
+    def __repr__(self):
+        return '{}.{} -> {}.{}'.format(
+            self.block_from.fields['name'], self.value_from, self.block_dest.fields['name'], self.value_dest)
+
 
 class Graph(object):
     """
