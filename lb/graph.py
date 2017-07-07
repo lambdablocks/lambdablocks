@@ -298,7 +298,8 @@ class Graph(object):
         for block in self.vertices.values():
             block_name = block.fields['block']
 
-            # we collect the actual types this block receives
+            # we collect the actual var names and types this block receives
+            received_names = []
             received_types = []
             for input_ in block.prev_vertices:
                 # the connected block producing this value:
@@ -310,31 +311,40 @@ class Graph(object):
                     print("Warning: {} doesn't seem to return a ReturnEntry of type ReturnType." \
                           .format(input_.block_from.fields['name']))
                     raise e
-
+                received_names.append(input_.value_dest)
                 received_types.append(type_or_any(received_type))
 
-            # we collect from the registry the list of expected types this
-            # block is supposed to receive
+            # we collect from the registry the list of expected names
+            # and types this block is supposed to receive
+            expected_names = []
             expected_types = []
             for expected_input in self.registry[block_name]['_inputs'].values():
                 if expected_input.kind == inspect.Parameter.POSITIONAL_OR_KEYWORD:
                     # "normal" parameter
+                    expected_names.append(expected_input.name)
                     expected_types.append(type_or_any(expected_input.annotation))
                 elif expected_input.kind == inspect.Parameter.VAR_KEYWORD:
                     # "tuple" parameter, *args
                     # We fill all the remaining types with this one,
                     # considering the number of supplied parameters is correct
                     missing = len(received_types) - len(expected_types)
+                    expected_names.extend([None] * missing) # no names
                     expected_types.extend([type_or_any(expected_input.annotation)] * missing)
                 else:
                     # keyword parameter or something else, we ignore the rest
                     break
 
-            # and we check that they are compatible
+            # we check that the types are compatible
             assert lb.types.is_sig_compatible(
                 tuple(received_types), tuple(expected_types)), \
                 'Block {} has signature\n{}\nbut has inputs\n{}'.format(
                     block.fields['block'], expected_types, received_types)
+
+            # we check that the names are the same
+            # precondition: the tables have the same len()
+            for x, y in zip(received_names, expected_names):
+                assert x == y or y is None, \
+                  'Wrong input name "{}" for block {}, expected "{}"'.format(x, block.fields['name'], y)
 
     def _check_dag_no_loops(self):
         """
