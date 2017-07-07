@@ -144,7 +144,7 @@ class Graph(object):
         self._parse_file()
         self._check_yaml()
         self._build_dag()
-        self._check_dag_types()
+        self._check_dag_inputs()
         self._check_dag_no_loops()
 
     def _parse_file(self):
@@ -290,10 +290,10 @@ class Graph(object):
                       'Arg {} for block {} is of type {}, expected {}'.format(
                           name, section['name'], type(value), expected_type)
 
-    def _check_dag_types(self):
+    def _check_dag_inputs(self):
         """
-        Checks that every output has the same type as the inputs where
-        it's consumed.
+        Checks that every output has the same name and type as the
+        inputs where it's consumed.
         """
         for block in self.vertices.values():
             block_name = block.fields['block']
