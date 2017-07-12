@@ -158,6 +158,15 @@ class Graph(object):
             self.dag_metadata = documents[0]
             assert documents[1] != None, \
                 "The topology doesn't define any block."
+
+            # every argument beginning with 'lambda' is considered a
+            # function and transformed as such
+            for section in documents[1]:
+                for key, value in section.get('args', {}).items():
+                    if isinstance(value, str):
+                        if value.startswith('lambda'):
+                            section['args'][key] = eval(value)
+
             self.dag_as_yaml = documents[1]
 
         if self.filename is not None:
