@@ -79,7 +79,7 @@ class Topology(_Section):
             self.fields['bind_out'] = {}
 
         # we create the subgraph
-        self.graph = Graph(self.fields['topology'], registry)
+        self.graph = Graph(filename=self.fields['topology'], registry=registry)
 
     def get_outbound(self, value):
         """
