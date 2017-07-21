@@ -79,7 +79,7 @@ class Topology(_Section):
             self.fields['bind_out'] = {}
 
         # we create the subgraph
-        self.graph = Graph(filename=self.fields['topology'], registry=registry)
+        self.graph = Graph(filename=self.fields['topology'], registry=registry, skip_check=True)
 
     def get_outbound(self, value):
         """
@@ -130,10 +130,14 @@ class Graph(object):
     Builds, stores, checks and executes a DAG from a YAML topology
     file.
     """
-    def __init__(self, filename=None, filecontent=None, registry=None):
+    def __init__(self, filename=None, filecontent=None, registry=None, skip_check=False):
         """
         Initializes a DAG for execution, provided a YAML file
         containing it, and a blocks registry.
+
+        skip_check allows to skip the checks: it is usually not
+        recommended, but can come handy when e.g. working with
+        subgraphs and avoiding to check partial graphs.
         """
         assert filename is None or filecontent is None, \
           'Either filename or filecontent must be provided, not both.'
@@ -144,8 +148,9 @@ class Graph(object):
         self._parse_file()
         self._check_yaml()
         self._build_dag()
-        self._check_dag_inputs()
-        self._check_dag_no_loops()
+        if not skip_check:
+            self._check_dag_inputs()
+            self._check_dag_no_loops()
 
     def _parse_file(self):
         """
