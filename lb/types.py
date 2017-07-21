@@ -17,7 +17,7 @@ Types manipulation.  This module defines functions to check for types
 compatibility.
 """
 
-from typing import Any, Mapping, Tuple, TupleMeta, TypeVar
+from typing import Any, Mapping, Tuple, TupleMeta, TypeVar, CallableMeta
 
 T = TypeVar('T')
 ReturnType = Mapping[str, T]
@@ -25,7 +25,7 @@ ReturnType = Mapping[str, T]
 def is_subtype(left, right):
     """
     Checks if left is a subtype of right, i.e. if they are compatible.
-    Currently implemented: basic types, Tuple, List
+    Currently implemented: basic types, Tuple, List, Callable.
     """
     if left is Any or right is Any:
         # Any is compatible with everything, on both sides
@@ -66,6 +66,20 @@ def is_subtype(left, right):
         # List only on one side, not compatible
         return False
 
+    def is_func_type(t):
+        """ Callable, <func> """
+        try:
+            if t.__name__ == 'function':
+                return True
+        except AttributeError:
+            pass
+        if type(t) == CallableMeta:
+            return True
+        return False
+
+    if is_func_type(left) and is_func_type(right):
+        return True
+
     # either a base type, or something else not supported
     return issubclass(left, right)
 
@@ -102,16 +116,16 @@ def is_instance(var, type_):
     """
     Checks if the type of a variable is compatible with another type.
 
-    Currently it is only a wrapper around built-in isinstance, but we
-    might add different type-checking later, e.g. with the types
-    returned by the yaml parser.
+    Currently it is only a wrapper around is_subtype, but we might add
+    different type-checking later, e.g. with the types returned by the
+    yaml parser.
     """
     if hasattr(type_, '__origin__') and type_.__origin__ is not None:
         # this is to avoid "TypeError: Parameterized generics cannot
         # be used with class or instance checks", so we we don't
         # currently check the parameterized types
         type_ = type_.__origin__
-    return isinstance(var, type_)
+    return is_subtype(type(var), type_)
 
 def type_of_mapping_values(type_):
     """
