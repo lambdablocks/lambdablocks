@@ -183,13 +183,12 @@ def aggregateByKey(zeroValue: typing.Any=None,
     return inner
 
 @block(engine='spark')
-def sortByKey(ascending=True,
-              numTasks=None):
+def sortByKey(ascending=True):
     """
     Spark's sortByKey
     """
     def inner(data: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
-        o = data.sortByKey(ascending=ascending, numTasks=numTasks)
+        o = data.sortByKey(ascending=ascending)
         return ReturnEntry(result=o)
     return inner
 
