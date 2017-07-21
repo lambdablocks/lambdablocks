@@ -17,7 +17,7 @@ This modules provides facilities to build and run a topology graph out
 of a YAML file.
 """
 
-from collections import defaultdict, deque
+from collections import deque
 
 import inspect
 import os.path
