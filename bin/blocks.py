@@ -34,6 +34,10 @@ def parse_args():
                         required=False,
                         action='store_false',
                         help='Do not load lambda-blocks predefined modules.')
+    parser.add_argument('--timing',
+                        required=False,
+                        action='store_true',
+                        help='Print time taken by each block to execute.')
     args = parser.parse_args()
     return args
 
@@ -44,7 +48,7 @@ def main():
                        load_internal_modules=args.no_internal_modules)
 
     g = Graph(filename=args.filename, registry=registry)
-    g.execute()
+    g.execute(timing=args.timing)
 
 if __name__ == '__main__':
     main()

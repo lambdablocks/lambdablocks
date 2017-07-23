@@ -18,9 +18,11 @@ of a YAML file.
 """
 
 from collections import deque
+from pprint import pprint
 
 import inspect
 import os.path
+import time
 import typing
 import yaml
 
@@ -376,13 +378,17 @@ class Graph(object):
                 for dest in current_block.next_vertices:
                     to_visit.append(dest.block_dest)
 
-    def execute(self):
+    def execute(self, timing=False):
         """
         Executes a DAG, beginning with all its entry points and giving
         their outputs to their consumers, iteratively.
+
+        If timing is True, it will also print on the standard output
+        the time taken by each block to execute.
         """
         results = {}
         fun_queue = deque(self.entry_points)
+        timing_by_block = {} # measures execution time for every block
 
         while len(fun_queue) > 0:
             block = fun_queue.popleft()
@@ -406,12 +412,18 @@ class Graph(object):
 
                     comp_inputs[input_.value_dest] = this_res
 
+                begin_time = time.time()
                 results[block] = comp_fun(**comp_args)(**comp_inputs)
+                end_time = time.time()
+                timing_by_block[block.fields['name']] = end_time - begin_time
 
                 # we add this block's destinations to the queue,
                 # if they are not there already
                 for destination in block.next_vertices:
                     if destination.block_dest not in fun_queue:
                         fun_queue.append(destination.block_dest)
+
+        if timing:
+            pprint(timing_by_block)
 
         return results
