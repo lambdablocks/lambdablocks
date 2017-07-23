@@ -1,0 +1,35 @@
+---
+name: Unix
+description: foo
+---
+- block: cat
+  name: cat
+  args:
+    filename: /etc/passwd
+
+- block: grep
+  name: grep
+  args:
+    pattern: ma
+  inputs:
+    data: cat.data
+
+- block: cut
+  name: cut
+  args:
+    sep: ':'
+    fields: [1, 2, 3]
+  inputs:
+    data: grep.data
+
+- block: tail
+  name: tail
+  args:
+    n: 1
+  inputs:
+    data: cut.data
+
+- block: show_console
+  name: show_console
+  inputs:
+    data: tail.data
