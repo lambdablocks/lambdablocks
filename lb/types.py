@@ -63,6 +63,9 @@ def is_subtype(left, right):
         return is_subtype(left.__args__[0], right.__args__[0])
 
     if is_list_type(left) != is_list_type(right):
+        if left == list or right == list:
+            # one of them is a list but we don't know a list of what
+            return True
         # List only on one side, not compatible
         return False
 
