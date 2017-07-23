@@ -87,7 +87,9 @@ class Registry(object):
             raise BlockError('Malformed block: {}'.format(name))
         # registers the block
         if name in self.blocks.keys():
-            raise BlockError('Duplicated block name: {}'.format(name))
+            raise BlockError('The registry saw a duplicated block name: {}. '
+                'It means a block has been defined twice, or the same name '
+                'has been used to define two blocks.'.format(name))
         else:
             self.blocks[name] = {
                 '_func':   func,
