@@ -7,8 +7,10 @@ description: Gives the top 5 words along with their number of occurences
   inputs:
     line: $inputs.data
 
-- block: map_with_one
+- block: map_
   name: map_with_one
+  args:
+    func: "lambda x: (x, 1)"
   inputs:
     data: text_to_words.result
 
@@ -22,12 +24,14 @@ description: Gives the top 5 words along with their number of occurences
   inputs:
     data: add.result
 
-- block: sort
+- block: sortByKey
   name: sort
+  args:
+    ascending: false
   inputs:
     data: swap.result
 
-- block: first_n
+- block: take
   name: first_5
   inputs:
     data: sort.result

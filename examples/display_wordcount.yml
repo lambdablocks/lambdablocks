@@ -17,7 +17,7 @@ description: foo
 - block: show_console
   name: show_console
   inputs:
-    struct: wordcount.res
+    data: wordcount.res
 
 - block: plot_bars
   name: plot_bars
