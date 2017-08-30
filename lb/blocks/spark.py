@@ -34,7 +34,13 @@ def default_function(n: int):
     else:
         raise Exception('Default function with {} parameters is not supported.'.format(n))
 
-spark_context = pyspark.SparkContext('local', 'lambdablocks')
+def get_spark_context():
+    """
+    Creates a Spark context.  Useful to have it in a function,
+    otherwise within a module it will be created at import time, even
+    if not used.
+    """
+    return pyspark.SparkContext('local', 'lambdablocks')
 
 ### Standard Spark programming library
 
@@ -46,6 +52,7 @@ def readfile(filename: str=None):
     Reads a file and returns an RDD ready to act on it.
     """
     def inner() -> ReturnType[pyspark.rdd.RDD]:
+        spark_context = get_spark_context()
         o = spark_context.textFile(filename)
         return ReturnEntry(result=o)
     return inner
