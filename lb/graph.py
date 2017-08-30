@@ -144,6 +144,9 @@ class Graph(object):
         assert filename is None or filecontent is None, \
           'Either filename or filecontent must be provided, not both.'
 
+        assert filename is not None or filecontent is not None, \
+          'You must provide at least a filename or filecontent when initializing a graph.'
+
         self.filename = filename
         self.filecontent = filecontent
         self.registry = registry
