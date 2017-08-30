@@ -18,11 +18,9 @@ of a YAML file.
 """
 
 from collections import deque
-from pprint import pprint
 
 import inspect
 import os.path
-import time
 import typing
 import yaml
 
