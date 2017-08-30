@@ -381,7 +381,7 @@ class Graph(object):
                 for dest in current_block.next_vertices:
                     to_visit.append(dest.block_dest)
 
-    def execute(self, timing=False):
+    def execute(self):
         """
         Executes a DAG, beginning with all its entry points and giving
         their outputs to their consumers, iteratively.
@@ -389,9 +389,10 @@ class Graph(object):
         If timing is True, it will also print on the standard output
         the time taken by each block to execute.
         """
+        self.before_graph_execution()
+
         results = {}
         fun_queue = deque(self.entry_points)
-        timing_by_block = {} # measures execution time for every block
 
         while len(fun_queue) > 0:
             block = fun_queue.popleft()
@@ -415,10 +416,9 @@ class Graph(object):
 
                     comp_inputs[input_.value_dest] = this_res
 
-                begin_time = time.time()
+                self.before_block_execution(block.fields['name'])
                 results[block] = comp_fun(**comp_args)(**comp_inputs)
-                end_time = time.time()
-                timing_by_block[block.fields['name']] = end_time - begin_time
+                self.after_block_execution(block.fields['name'])
 
                 # we add this block's destinations to the queue,
                 # if they are not there already
@@ -426,7 +426,18 @@ class Graph(object):
                     if destination.block_dest not in fun_queue:
                         fun_queue.append(destination.block_dest)
 
-        if timing:
-            pprint(timing_by_block)
+        self.after_graph_execution()
 
         return results
+
+    def before_graph_execution(self):
+        pass
+
+    def after_graph_execution(self):
+        pass
+
+    def before_block_execution(self, blockname):
+        pass
+
+    def after_graph_execution(self, blockname):
+        pass

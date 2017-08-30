@@ -17,6 +17,7 @@
 import argparse
 
 from lb.graph import Graph
+from lb.timing import TimingGraph
 from lb.registry import Registry
 
 def parse_args():
@@ -47,8 +48,13 @@ def main():
     registry = Registry(external_modules=args.modules,
                        load_internal_modules=args.no_internal_modules)
 
-    g = Graph(filename=args.filename, registry=registry)
-    g.execute(timing=args.timing)
+    if args.timing:
+        graph_type = TimingGraph
+    else:
+        graph_type = Graph
+
+    g = graph_type(filename=args.filename, registry=registry)
+    g.execute()
 
 if __name__ == '__main__':
     main()
