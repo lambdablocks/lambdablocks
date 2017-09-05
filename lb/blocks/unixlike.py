@@ -24,14 +24,14 @@ def cat(filename: str=None):
         data = None
         with open(filename) as f:
             data = f.readlines()
-        return ReturnEntry(data=data)
+        return ReturnEntry(result=data)
     return inner
 
 @block(engine='unixlike')
 def grep(pattern: str=None):
     def inner(data: List[str]) -> ReturnType[List[str]]:
         data = list(filter(lambda x: pattern in x, data))
-        return ReturnEntry(data=data)
+        return ReturnEntry(result=data)
     return inner
 
 @block(engine='unixlike')
@@ -49,12 +49,12 @@ def cut(sep: str=None, fields: List[int]=[]):
 def head(n: int=0):
     def inner(data: List[str]) -> ReturnType[List[str]]:
         data = data[:n]
-        return ReturnEntry(data=data)
+        return ReturnEntry(result=data)
     return inner
 
 @block(engine='unixlike')
 def tail(n: int=0):
     def inner(data: List[str]) -> ReturnType[List[str]]:
         data = data[-n:]
-        return ReturnEntry(data=data)
+        return ReturnEntry(result=data)
     return inner

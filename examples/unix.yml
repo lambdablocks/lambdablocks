@@ -12,7 +12,7 @@ description: foo
   args:
     pattern: ma
   inputs:
-    data: cat.data
+    data: cat.result
 
 - block: cut
   name: cut
@@ -20,16 +20,16 @@ description: foo
     sep: ':'
     fields: [1, 2, 3]
   inputs:
-    data: grep.data
+    data: grep.result
 
 - block: tail
   name: tail
   args:
     n: 1
   inputs:
-    data: cut.data
+    data: cut.result
 
 - block: show_console
   name: show_console
   inputs:
-    data: tail.data
+    data: tail.result
