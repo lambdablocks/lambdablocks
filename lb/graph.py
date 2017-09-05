@@ -437,5 +437,5 @@ class Graph(object):
     def before_block_execution(self, blockname):
         pass
 
-    def after_graph_execution(self, blockname):
+    def after_block_execution(self, blockname):
         pass
