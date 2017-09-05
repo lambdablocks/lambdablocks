@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from pprint import pprint
-import typing
+from typing import Any, List
 
 from lb.registry import block
 from lb.types import ReturnType
@@ -25,8 +25,36 @@ def show_console():
     """
     Pretty prints in green on the console.
     """
-    def inner(data: typing.Any):
+    def inner(data: Any):
         print('\033[92m') # green
         pprint(data)
         print('\033[0m')
+    return inner
+
+@block(engine='all')
+def write_line(filename: str=''):
+    def inner(data: str):
+        with open(filename, 'w') as f:
+            f.write(data)
+    return inner
+
+@block(engine='all')
+def write_lines(filename: str=''):
+    def inner(data: List[str]):
+        with open(filename, 'w') as f:
+            for line in data:
+                line += '\n'
+                f.write(line)
+    return inner
+
+@block(engine='all')
+def split(sep: str='\n'):
+    def inner(data: str) -> ReturnType[List[str]]:
+        return ReturnEntry(result=data.split(sep))
+    return inner
+
+@block(engine='all')
+def concatenate(sep: str='\n'):
+    def inner(data: List[Any]) -> ReturnType[Any]:
+        return ReturnEntry(result=sep.join(data))
     return inner
