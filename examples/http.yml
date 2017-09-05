@@ -1,0 +1,27 @@
+---
+name: http
+description: Make an HTTP request to get a list of words, keep only those having the letter 'e', writes the result in a file.
+---
+- block: read_http
+  name: read_http
+  args:
+    url: https://raw.githubusercontent.com/dwyl/english-words/master/words.txt
+
+- block: split
+  name: split
+  inputs:
+    data: read_http.result
+
+- block: grep
+  name: grep
+  inputs:
+    data: split.result
+  args:
+    pattern: e
+
+- block: write_lines
+  name: write_lines
+  inputs:
+    data: grep.result
+  args:
+    filename: result.txt
