@@ -26,6 +26,7 @@ import yaml
 
 import lb.types
 from lb.exceptions import NotBoundError, YAMLError, ExecutionError
+from lb.plugins_manager import HOOKS
 
 def type_or_any(type_):
     """
@@ -414,9 +415,9 @@ class Graph(object):
 
                     comp_inputs[input_.value_dest] = this_res
 
-                self.before_block_execution(block.fields['name'])
+                self.before_block_execution(block)
                 results[block] = comp_fun(**comp_args)(**comp_inputs)
-                self.after_block_execution(block.fields['name'])
+                self.after_block_execution(block)
 
                 # we add this block's destinations to the queue,
                 # if they are not there already
@@ -429,13 +430,17 @@ class Graph(object):
         return results
 
     def before_graph_execution(self):
-        pass
+        for f in HOOKS['before_graph_execution']:
+            f()
 
     def after_graph_execution(self):
-        pass
+        for f in HOOKS['after_graph_execution']:
+            f()
 
-    def before_block_execution(self, blockname):
-        pass
+    def before_block_execution(self, block):
+        for f in HOOKS['before_block_execution']:
+            f(block)
 
-    def after_block_execution(self, blockname):
-        pass
+    def after_block_execution(self, block):
+        for f in HOOKS['after_block_execution']:
+            f(block)

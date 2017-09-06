@@ -15,9 +15,10 @@
 # limitations under the License.
 
 import argparse
+import glob
+import os
 
 from lb.graph import Graph
-from lb.timing import TimingGraph
 from lb.registry import Registry
 
 def parse_args():
@@ -35,12 +36,35 @@ def parse_args():
                         required=False,
                         action='store_false',
                         help='Do not load lambda-blocks predefined modules.')
-    parser.add_argument('--timing',
+    parser.add_argument('-p', '--plugins',
                         required=False,
-                        action='store_true',
-                        help='Print time taken by each block to execute.')
+                        nargs='+',
+                        help='List of plugins to activate. Available plugins: {}'.format(
+                            ','.join(available_plugins())))
     args = parser.parse_args()
     return args
+
+def available_plugins():
+    """
+    List plugins available from lb/plugins/
+    """
+    path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                        'lb',
+                        'plugins')
+    plugins = glob.glob('{}/*.py'.format(path))
+    return [os.path.basename(x).split('.')[0] for x in plugins]
+
+def import_plugins(plugins):
+    """
+    Imports the activated plugins, which will register their hooks.
+    """
+    if plugins is not None:
+        for plugin in plugins:
+            try:
+                __import__('lb.plugins.{}'.format(plugin))
+            except ImportError as e:
+                print('Plugin {} could not be found. Is it in the folder `lb/plugins/`?'.format(plugin))
+                raise e
 
 def main():
     args = parse_args()
@@ -48,12 +72,9 @@ def main():
     registry = Registry(external_modules=args.modules,
                        load_internal_modules=args.no_internal_modules)
 
-    if args.timing:
-        graph_type = TimingGraph
-    else:
-        graph_type = Graph
+    import_plugins(args.plugins)
 
-    g = graph_type(filename=args.filename, registry=registry)
+    g = Graph(filename=args.filename, registry=registry)
     g.execute()
 
 if __name__ == '__main__':
