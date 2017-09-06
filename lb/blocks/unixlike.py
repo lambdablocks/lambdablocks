@@ -42,7 +42,7 @@ def cut(sep: str=None, fields: List[int]=[]):
         for item in data:
             item = item.split(sep)
             result.append(sep.join([item[x] for x in fields_]))
-        return ReturnEntry(data=result)
+        return ReturnEntry(result=result)
     return inner
 
 @block(engine='unixlike')
