@@ -171,6 +171,9 @@ class Graph(object):
             # every argument beginning with 'lambda' is considered a
             # function and transformed as such
             for section in documents[1]:
+                # happens at least when a file contains only "foo: bar":
+                assert type(section) is not str, \
+                  'Malformed section: {}'.format(section)
                 for key, value in section.get('args', {}).items():
                     if isinstance(value, str):
                         if value.startswith('lambda'):

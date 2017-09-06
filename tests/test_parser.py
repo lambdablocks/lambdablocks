@@ -15,7 +15,7 @@
 """
 This module makes tests about the YAML parser/graph builder.
 
-If someone is reading this, cheers!  You're either curious or you're
+If you're reading this, cheers!  You're either curious or you're
 adding tests to lambda blocks.  That's great.  Here's a joke for your
 trouble: "There are two difficult problems in computer science: cache
 invalidation, naming things, and off-by-one errors."
@@ -57,7 +57,7 @@ class TestParser(unittest.TestCase):
         ---
         foo: bar
         """)
-        with self.assertRaisesRegex(AssertionError, 'malformed: foo'):
+        with self.assertRaisesRegex(AssertionError, 'Malformed section: foo'):
             g = Graph(filecontent=content, registry=self.registry)
 
     def test_unnamed_section(self):
