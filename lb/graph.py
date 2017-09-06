@@ -384,9 +384,6 @@ class Graph(object):
         """
         Executes a DAG, beginning with all its entry points and giving
         their outputs to their consumers, iteratively.
-
-        If timing is True, it will also print on the standard output
-        the time taken by each block to execute.
         """
         self.before_graph_execution()
 
