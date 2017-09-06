@@ -19,6 +19,7 @@ of a YAML file.
 
 from collections import deque
 
+import collections
 import inspect
 import os.path
 import typing
@@ -161,7 +162,14 @@ class Graph(object):
         Parses a YAML file defining a DAG.
         """
         def parse(content):
-            documents = list(yaml.safe_load_all(content))
+            # Make YAML parser use OrderedDict instead of dict, to
+            # keep e.g. the order of inputs correct
+            _mapping_tag = yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG
+            def dict_constructor(loader, node):
+                return collections.OrderedDict(loader.construct_pairs(node))
+            yaml.add_constructor(_mapping_tag, dict_constructor)
+
+            documents = list(yaml.load_all(content))
             assert len(documents) == 2, \
                 'YAML file must contain 2 documents: metadata, and DAG description.'
             self.dag_metadata = documents[0]
