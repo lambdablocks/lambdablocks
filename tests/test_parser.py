@@ -143,9 +143,8 @@ class TestParser(unittest.TestCase):
           inputs:
             data: merge_lists.result
         """)
-        g = Graph(filecontent=content, registry=self.registry)
         with self.assertRaisesRegex(AssertionError, 'There is a loop'):
-            g.check()
+            g = Graph(filecontent=content, registry=self.registry)
 
     def test_dag_wrong_types(self):
         content = textwrap.dedent("""
@@ -158,9 +157,8 @@ class TestParser(unittest.TestCase):
           inputs:
             data: input_str.result
         """)
-        g = Graph(filecontent=content, registry=self.registry)
         with self.assertRaisesRegex(AssertionError, 'Block sometimes_reverse has signature'):
-            g.check()
+            g = Graph(filecontent=content, registry=self.registry)
 
     def test_trivial_execution(self):
         content = textwrap.dedent("""
