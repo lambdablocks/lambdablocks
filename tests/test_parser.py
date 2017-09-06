@@ -118,7 +118,7 @@ class TestParser(unittest.TestCase):
           inputs:
             data: sometimes_reverse.result
         """)
-        g = Graph(filecontent = content, registry=self.registry)
+        g = Graph(filecontent=content, registry=self.registry)
         assert g.topology_inputs == []
         assert len(g.vertices) == 3
         assert len(g.entry_points) == 1
@@ -143,7 +143,7 @@ class TestParser(unittest.TestCase):
           inputs:
             data: merge_lists.result
         """)
-        g = Graph(filecontent = content, registry=self.registry)
+        g = Graph(filecontent=content, registry=self.registry)
         with self.assertRaisesRegex(AssertionError, 'There is a loop'):
             g.check()
 
@@ -158,7 +158,7 @@ class TestParser(unittest.TestCase):
           inputs:
             data: input_str.result
         """)
-        g = Graph(filecontent = content, registry=self.registry)
+        g = Graph(filecontent=content, registry=self.registry)
         with self.assertRaisesRegex(AssertionError, 'Block sometimes_reverse has signature'):
             g.check()
 
@@ -175,7 +175,7 @@ class TestParser(unittest.TestCase):
           inputs:
             data: input.result
         """)
-        g = Graph(filecontent = content, registry=self.registry)
+        g = Graph(filecontent=content, registry=self.registry)
         results = g.execute()
         sr_results = results[g.vertices['sometimes_reverse']]
         assert getattr(sr_results, 'result') == [3,2,1]
