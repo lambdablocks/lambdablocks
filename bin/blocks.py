@@ -39,8 +39,8 @@ def parse_args():
     parser.add_argument('-p', '--plugins',
                         required=False,
                         nargs='+',
-                        help='List of plugins to activate. Available plugins: {}'.format(
-                            ','.join(available_plugins())))
+                        choices=available_plugins(),
+                        help='List of plugins to activate')
     args = parser.parse_args()
     return args
 
