@@ -176,7 +176,6 @@ class TestParser(unittest.TestCase):
             data: input.result
         """)
         g = Graph(filecontent = content, registry=self.registry)
-        g.check()
         results = g.execute()
         sr_results = results[g.vertices['sometimes_reverse']]
         assert getattr(sr_results, 'result') == [3,2,1]
