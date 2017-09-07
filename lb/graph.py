@@ -379,17 +379,37 @@ class Graph(object):
         """
         Checks that the DAG doesn't contain loops.
         """
-        for entry in self.entry_points:
-            visited = []
-            to_visit = deque([entry])
-            while len(to_visit) > 0:
-                current_block = to_visit.popleft()
-                assert current_block not in visited, \
-                    'There is a loop in your DAG, occuring with the block {}' \
-                    .format(current_block.fields['name'])
-                visited.append(current_block)
-                for dest in current_block.next_vertices:
-                    to_visit.append(dest.block_dest)
+        def loop_in_path(path):
+            names = [x.fields['name'] for x in path]
+            assert len(set(names)) == len(names),\
+                'There is a loop in your DAG, occuring with the block {}' \
+                .format(names[-1])
+
+        self.loop_vertices(loop_in_path)
+
+    def loop_vertices(self, fun, depth=False):
+        """
+        Implements a breadth-first search on the DAG, and applies
+        function `fun` to every vertice.
+
+        `fun` must accept one argument, a list of vertices
+        representing the path taken.  The last element of this list is
+        the current vertice.
+
+        If `depth` is True, do a depth-first search instead.
+        """
+        # initial paths are [[entrypoint1],[entrypoint2],…]
+        queue_to_visit = deque([[x] for x in self.entry_points])
+        while len(queue_to_visit) > 0:
+            current_path = queue_to_visit.popleft()
+            current_vertice = current_path[-1]
+            fun(current_path)
+            # add linked vertices to the queue
+            for dest in current_vertice.next_vertices:
+                if depth:
+                    queue_to_visit.appendleft(current_path + [dest.block_dest])
+                else:
+                    queue_to_visit.append(current_path + [dest.block_dest])
 
     def execute(self):
         """
