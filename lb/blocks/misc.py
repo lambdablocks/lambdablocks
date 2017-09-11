@@ -12,12 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import itertools
+
 from pprint import pprint
-from typing import Any, List
+from typing import Any, Callable, List, Tuple
 
 from lb.registry import block
 from lb.types import ReturnType
-from lb.utils import ReturnEntry
+from lb.utils import ReturnEntry, default_function
 
 
 @block(engine='all')
@@ -57,4 +59,51 @@ def split(sep: str='\n'):
 def concatenate(sep: str='\n'):
     def inner(data: List[Any]) -> ReturnType[Any]:
         return ReturnEntry(result=sep.join(data))
+    return inner
+
+@block(engine='all')
+def map_list(func: Callable[[Any], Any]=default_function(1)):
+    def inner(data: List[Any]) -> ReturnType[List[Any]]:
+        return ReturnEntry(result=list(map(func, data)))
+    return inner
+
+@block(engine='all')
+def flatMap(func: Callable[[Any], List[Any]]=default_function(1, [])):
+    """
+    Applies a map function to every item, and then flattens the result.
+    [a,b,c] -> [[x,y],[z],[]] -> [x,y,z]
+    """
+    def inner(data: List[Any]) -> ReturnType[List[Any]]:
+        result = []
+        for item in data:
+            result.extend(func(item))
+        return ReturnEntry(result=result)
+    return inner
+
+@block(engine='all')
+def flatten_list():
+    def inner(data: List[List[Any]]) -> ReturnType[List[Any]]:
+        result = []
+        for item in data:
+            result.extend(item)
+        return ReturnEntry(result=result)
+    return inner
+
+@block(engine='all')
+def group_by_count():
+    """
+    Groups items in a similar manner as SQL's `COUNT()…GROUP BY()`.
+    """
+    def inner(data: List[Any]) -> ReturnType[List[Tuple[Any,int]]]:
+        grouped = itertools.groupby(sorted(data))
+        result = map(lambda x: (x[0], len(list(x[1]))), grouped)
+        return ReturnEntry(result=list(result))
+    return inner
+
+@block(engine='unixlike')
+def sort(key: Callable[[Any], Any]=default_function(1),
+         reverse: bool=False):
+    def inner(data: List[Any]) -> ReturnType[List[Any]]:
+        result = sorted(data, key=key, reverse=reverse)
+        return ReturnEntry(result=result)
     return inner
