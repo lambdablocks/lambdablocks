@@ -39,7 +39,7 @@ implementations with different language choices.
 ### Debian dependencies
 
 Python libraries:
-`apt install python3 python3-yaml python3-matplotlib python3-nose2 python3-nose2-cov`
+`apt install python3 python3-yaml python3-matplotlib python3-nose2 python3-nose2-cov python3-requests-oauthlib`
 
 If you want to write topologies based on Spark, you need to install
 Spark and pyspark.
