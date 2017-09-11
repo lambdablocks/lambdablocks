@@ -1,0 +1,37 @@
+---
+name: twitter-wordcount
+description: Extract the most used hashtags on the recent AFP timeline.
+---
+- block: twitter_search
+  name: twitter_search
+  args:
+    query: "from:afp"
+    client_key: xxx
+    client_secret: xxx
+    resource_owner_key: xxx
+    resource_owner_secret: xxx
+
+- block: flatMap
+  name: extract_hashtags
+  inputs:
+    data: twitter_search.result
+  args:
+    func: "lambda x: [y['text'] for y in x['entities']['hashtags']]"
+
+- block: group_by_count
+  name: reduce
+  inputs:
+    data: extract_hashtags.result
+
+- block: sort
+  name: sort
+  inputs:
+    data: reduce.result
+  args:
+    key: "lambda x: x[1]"
+    reverse: true
+
+- block: show_console
+  name: show_console
+  inputs:
+    data: sort.result
