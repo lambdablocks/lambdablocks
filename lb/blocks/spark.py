@@ -18,21 +18,7 @@ import pyspark
 
 from lb.registry import block
 from lb.types import ReturnType
-from lb.utils import ReturnEntry
-
-def default_function(n: int):
-    """
-    Creates a dummy default function to provide as default value when
-    a func parameter is expected.
-    """
-    if n == 0:
-        return lambda: 0
-    elif n == 1:
-        return lambda _: 0
-    elif n == 2:
-        return lambda _,__: 0
-    else:
-        raise Exception('Default function with {} parameters is not supported.'.format(n))
+from lb.utils import ReturnEntry, default_function
 
 def get_spark_context():
     """
@@ -47,7 +33,7 @@ def get_spark_context():
 # Transformations
 
 @block(engine='spark')
-def readfile(filename: str=None):
+def spark_readfile(filename: str=None):
     """
     Reads a file and returns an RDD ready to act on it.
     """
@@ -58,7 +44,7 @@ def readfile(filename: str=None):
     return inner
 
 @block(engine='spark')
-def text_to_words(lowercase: bool=False):
+def spark_text_to_words(lowercase: bool=False):
     """
     Converts a line of text into a list of words.
     """
@@ -76,7 +62,7 @@ def text_to_words(lowercase: bool=False):
     return inner
 
 @block(engine='spark')
-def map_(func: typing.Callable[[pyspark.rdd.RDD], pyspark.rdd.RDD]=default_function(1)):
+def spark_map(func: typing.Callable[[pyspark.rdd.RDD], pyspark.rdd.RDD]=default_function(1)):
     """
     Spark's map
     """
@@ -86,7 +72,7 @@ def map_(func: typing.Callable[[pyspark.rdd.RDD], pyspark.rdd.RDD]=default_funct
     return inner
 
 @block(engine='spark')
-def filter_(func: typing.Callable[[pyspark.rdd.RDD], pyspark.rdd.RDD]=default_function(1)):
+def spark_filter(func: typing.Callable[[pyspark.rdd.RDD], pyspark.rdd.RDD]=default_function(1)):
     """
     Spark's filter
     """
@@ -96,7 +82,7 @@ def filter_(func: typing.Callable[[pyspark.rdd.RDD], pyspark.rdd.RDD]=default_fu
     return inner
 
 @block(engine='spark')
-def flatMap(func: typing.Callable[[pyspark.rdd.RDD], pyspark.rdd.RDD]=default_function(1)):
+def spark_flatMap(func: typing.Callable[[pyspark.rdd.RDD], pyspark.rdd.RDD]=default_function(1)):
     """
     Spark's flatMap
     """
@@ -106,7 +92,7 @@ def flatMap(func: typing.Callable[[pyspark.rdd.RDD], pyspark.rdd.RDD]=default_fu
     return inner
 
 @block(engine='spark')
-def mapPartitions(func: typing.Callable[[pyspark.rdd.RDD], pyspark.rdd.RDD]=default_function(1)):
+def spark_mapPartitions(func: typing.Callable[[pyspark.rdd.RDD], pyspark.rdd.RDD]=default_function(1)):
     """
     Spark's mapPartitions
     """
@@ -116,7 +102,7 @@ def mapPartitions(func: typing.Callable[[pyspark.rdd.RDD], pyspark.rdd.RDD]=defa
     return inner
 
 @block(engine='spark')
-def sample(withReplacement: bool=False, fraction: float=0.1, seed: int=1):
+def spark_sample(withReplacement: bool=False, fraction: float=0.1, seed: int=1):
     """
     Spark's sample
     """
@@ -126,7 +112,7 @@ def sample(withReplacement: bool=False, fraction: float=0.1, seed: int=1):
     return inner
 
 @block(engine='spark')
-def union():
+def spark_union():
     """
     Spark's union
     """
@@ -136,7 +122,7 @@ def union():
     return inner
 
 @block(engine='spark')
-def intersection():
+def spark_intersection():
     """
     Spark's intersection
     """
@@ -146,7 +132,7 @@ def intersection():
     return inner
 
 @block(engine='spark')
-def distinct(numTasks=None):
+def spark_distinct(numTasks=None):
     """
     Spark's distinct
     """
@@ -156,7 +142,7 @@ def distinct(numTasks=None):
     return inner
 
 @block(engine='spark')
-def groupByKey(numTasks=None):
+def spark_groupByKey(numTasks=None):
     """
     Spark's groupByKey
     """
@@ -166,7 +152,7 @@ def groupByKey(numTasks=None):
     return inner
 
 @block(engine='spark')
-def reduceByKey(func: typing.Callable[[pyspark.rdd.RDD], pyspark.rdd.RDD]=default_function(1),
+def spark_reduceByKey(func: typing.Callable[[pyspark.rdd.RDD], pyspark.rdd.RDD]=default_function(1),
                 numTasks=None):
     """
     Spark's reduceByKey
@@ -177,7 +163,7 @@ def reduceByKey(func: typing.Callable[[pyspark.rdd.RDD], pyspark.rdd.RDD]=defaul
     return inner
 
 @block(engine='spark')
-def aggregateByKey(zeroValue: typing.Any=None,
+def spark_aggregateByKey(zeroValue: typing.Any=None,
                    seqFunc: typing.Callable[[pyspark.rdd.RDD], pyspark.rdd.RDD]=default_function(1),
                    combFunc: typing.Callable[[pyspark.rdd.RDD], pyspark.rdd.RDD]=default_function(1),
                    numTasks=None):
@@ -190,7 +176,7 @@ def aggregateByKey(zeroValue: typing.Any=None,
     return inner
 
 @block(engine='spark')
-def sortByKey(ascending=True):
+def spark_sortByKey(ascending=True):
     """
     Spark's sortByKey
     """
@@ -200,7 +186,7 @@ def sortByKey(ascending=True):
     return inner
 
 @block(engine='spark')
-def join(numTasks=None):
+def spark_join(numTasks=None):
     """
     Spark's join
     """
@@ -210,7 +196,7 @@ def join(numTasks=None):
     return inner
 
 @block(engine='spark')
-def cogroup(numTasks=None):
+def spark_cogroup(numTasks=None):
     """
     Spark's cogroup
     """
@@ -220,7 +206,7 @@ def cogroup(numTasks=None):
     return inner
 
 @block(engine='spark')
-def cartesian():
+def spark_cartesian():
     """
     Spark's cartesian
     """
@@ -230,7 +216,7 @@ def cartesian():
     return inner
 
 @block(engine='spark')
-def pipe(command: str=''):
+def spark_pipe(command: str=''):
     """
     Spark's pipe
     """
@@ -240,7 +226,7 @@ def pipe(command: str=''):
     return inner
 
 @block(engine='spark')
-def coalesce(numPartitions: int=1):
+def spark_coalesce(numPartitions: int=1):
     """
     Spark's coalesce
     """
@@ -250,7 +236,7 @@ def coalesce(numPartitions: int=1):
     return inner
 
 @block(engine='spark')
-def repartition(numPartitions: int=1):
+def spark_repartition(numPartitions: int=1):
     """
     Spark's repartition
     """
@@ -262,7 +248,7 @@ def repartition(numPartitions: int=1):
 # Actions
 
 @block(engine='spark')
-def reduce(func: typing.Callable[[pyspark.rdd.RDD, pyspark.rdd.RDD], pyspark.rdd.RDD]=default_function(2)):
+def spark_reduce(func: typing.Callable[[pyspark.rdd.RDD, pyspark.rdd.RDD], pyspark.rdd.RDD]=default_function(2)):
     """
     Spark's reduce
     """
@@ -272,7 +258,7 @@ def reduce(func: typing.Callable[[pyspark.rdd.RDD, pyspark.rdd.RDD], pyspark.rdd
     return inner
 
 @block(engine='spark')
-def collect():
+def spark_collect():
     """
     Spark's collect
     """
@@ -282,7 +268,7 @@ def collect():
     return inner
 
 @block(engine='spark')
-def count():
+def spark_count():
     """
     Spark's count
     """
@@ -292,7 +278,7 @@ def count():
     return inner
 
 @block(engine='spark')
-def first():
+def spark_first():
     """
     Spark's first
     """
@@ -302,7 +288,7 @@ def first():
     return inner
 
 @block(engine='spark')
-def take(n: int=0):
+def spark_take(n: int=0):
     """
     Spark's take
     """
@@ -312,7 +298,7 @@ def take(n: int=0):
     return inner
 
 @block(engine='spark')
-def takeSample(withReplacement: bool=False, num: int=0, seed: int=None):
+def spark_takeSample(withReplacement: bool=False, num: int=0, seed: int=None):
     """
     Spark's takeSample
     """
@@ -322,7 +308,7 @@ def takeSample(withReplacement: bool=False, num: int=0, seed: int=None):
     return inner
 
 @block(engine='spark')
-def takeOrdered(num: int=0, key: typing.Callable[[pyspark.rdd.RDD], pyspark.rdd.RDD]=lambda x: x):
+def spark_takeOrdered(num: int=0, key: typing.Callable[[pyspark.rdd.RDD], pyspark.rdd.RDD]=lambda x: x):
     """
     Spark's takeOrdered
     """
@@ -332,7 +318,7 @@ def takeOrdered(num: int=0, key: typing.Callable[[pyspark.rdd.RDD], pyspark.rdd.
     return inner
 
 @block(engine='spark')
-def saveAsTextFile(path: str=''):
+def spark_saveAsTextFile(path: str=''):
     """
     Spark's saveAsTextFile
     """
@@ -341,7 +327,7 @@ def saveAsTextFile(path: str=''):
     return inner
 
 @block(engine='spark')
-def countByKey():
+def spark_countByKey():
     """
     Spark's countByKey
     """
@@ -351,7 +337,7 @@ def countByKey():
     return inner
 
 @block(engine='spark')
-def foreach(func: typing.Callable=default_function(1)):
+def spark_foreach(func: typing.Callable=default_function(1)):
     """
     Spark's foreach
     """
@@ -363,14 +349,14 @@ def foreach(func: typing.Callable=default_function(1)):
 ### Helpers on top of Spark's library
 
 @block(engine='spark')
-def add():
+def spark_add():
     def inner(data: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
         o = data.reduceByKey(lambda a,b: a+b)
         return ReturnEntry(result=o)
     return inner
 
 @block(engine='spark')
-def swap():
+def spark_swap():
     def inner(data: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
         o = data.map(lambda x: (x[1],x[0]))
         return ReturnEntry(result=o)

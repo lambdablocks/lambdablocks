@@ -2,7 +2,7 @@
 name: Display wordcount
 description: foo
 ---
-- block: readfile
+- block: spark_readfile
   name: readfile
   args:
     filename: examples/loremipsum

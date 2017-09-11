@@ -17,7 +17,24 @@ Misc. utilities.
 """
 
 from collections import namedtuple
+from typing import Any
 
 def ReturnEntry(**kwargs):
     R = namedtuple('R', kwargs.keys())
     return R(**kwargs)
+
+def default_function(n: int, value: Any=None):
+    """
+    Creates a dummy default function to provide as default value when
+    a func parameter is expected.
+    `n` is the number of parameters expected.
+    `value` is the default value returned by the function
+    """
+    if n == 0:
+        return lambda: value
+    elif n == 1:
+        return lambda _: value
+    elif n == 2:
+        return lambda _,__: value
+    else:
+        raise Exception('Default function with {} parameters is not supported.'.format(n))

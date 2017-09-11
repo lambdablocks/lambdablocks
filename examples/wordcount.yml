@@ -2,36 +2,36 @@
 name: Wordcount
 description: Gives the top 5 words along with their number of occurences
 ---
-- block: text_to_words
+- block: spark_text_to_words
   name: text_to_words
   inputs:
     line: $inputs.data
 
-- block: map_
+- block: spark_map
   name: map_with_one
   args:
     func: "lambda x: (x, 1)"
   inputs:
     data: text_to_words.result
 
-- block: add
+- block: spark_add
   name: add
   inputs:
     data: map_with_one.result
 
-- block: swap
+- block: spark_swap
   name: swap
   inputs:
     data: add.result
 
-- block: sortByKey
+- block: spark_sortByKey
   name: sort
   args:
     ascending: false
   inputs:
     data: swap.result
 
-- block: take
+- block: spark_take
   name: first_5
   inputs:
     data: sort.result
