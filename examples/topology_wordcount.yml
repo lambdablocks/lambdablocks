@@ -1,0 +1,23 @@
+---
+name: topology-wordcount
+description: When fed with a list of items, will group them and return the top-5 ones along with their number of occurences.
+---
+- block: group_by_count
+  name: reduce
+  inputs:
+    data: $inputs.data
+
+- block: sort
+  name: sort
+  args:
+    key: "lambda x: x[1]"
+    reverse: true
+  inputs:
+    data: reduce.result
+
+- block: head
+  name: head
+  args:
+    n: 5
+  inputs:
+    data: sort.result
