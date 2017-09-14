@@ -18,20 +18,14 @@ description: Extract the most used hashtags on the recent AFP timeline.
   args:
     func: "lambda x: [y['text'] for y in x['entities']['hashtags']]"
 
-- block: group_by_count
-  name: reduce
-  inputs:
+- topology: examples/topology_wordcount.yml
+  name: wordcount
+  bind_in:
     data: extract_hashtags.result
-
-- block: sort
-  name: sort
-  inputs:
-    data: reduce.result
-  args:
-    key: "lambda x: x[1]"
-    reverse: true
+  bind_out:
+    result: head.result
 
 - block: show_console
   name: show_console
   inputs:
-    data: sort.result
+    data: wordcount.result

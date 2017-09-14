@@ -7,7 +7,7 @@ description: foo
   args:
     filename: examples/loremipsum
 
-- topology: examples/wordcount.yml
+- topology: examples/topology_spark_wordcount.yml
   name: wordcount
   bind_in:
     data: readfile.result
