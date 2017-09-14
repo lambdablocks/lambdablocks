@@ -445,7 +445,7 @@ class Graph(object):
 
                 self.before_block_execution(block)
                 results[block] = comp_fun(**comp_args)(**comp_inputs)
-                self.after_block_execution(block)
+                self.after_block_execution(block, results[block])
 
                 # we add this block's destinations to the queue,
                 # if they are not there already
@@ -469,6 +469,6 @@ class Graph(object):
         for f in HOOKS['before_block_execution']:
             f(block)
 
-    def after_block_execution(self, block):
+    def after_block_execution(self, block, results):
         for f in HOOKS['after_block_execution']:
-            f(block)
+            f(block, results)

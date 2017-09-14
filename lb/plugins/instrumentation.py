@@ -32,7 +32,7 @@ def store_begin_time(block):
     timing_by_block[name]['begin'] = time.time()
 
 @after_block_execution
-def store_end_time(block):
+def store_end_time(block, results):
     name = block.fields['name']
     timing_by_block[name]['end'] = time.time()
     timing_by_block[name]['duration'] = timing_by_block[name]['end'] - timing_by_block[name]['begin']
