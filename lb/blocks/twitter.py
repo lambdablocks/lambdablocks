@@ -13,9 +13,8 @@
 # limitations under the License.
 
 import json
-import urllib
 
-from typing import List, Any
+from typing import List
 
 from requests_oauthlib import OAuth1Session
 
