@@ -17,7 +17,7 @@ Types manipulation.  This module defines functions to check for types
 compatibility.
 """
 
-from typing import Any, Mapping, Tuple, TupleMeta, TypeVar, CallableMeta
+from typing import Any, List, Mapping, Tuple, TupleMeta, TypeVar, CallableMeta
 
 T = TypeVar('T')
 ReturnType = Mapping[str, T]
@@ -53,7 +53,7 @@ def is_subtype(left, right):
     def is_list_type(t):
         """ Hack to know if a type is typing.List[T] """
         if hasattr(t, '__base__'):
-            if t.__base__ == list:
+            if t.__base__ in [list, List]:
                 return True
         return False
 
