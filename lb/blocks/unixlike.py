@@ -16,7 +16,7 @@ from lb.registry import block
 from lb.types import ReturnType
 from lb.utils import ReturnEntry
 
-from typing import List
+from typing import List, Any
 
 @block(engine='unixlike')
 def cat(filename: str=None):
@@ -47,14 +47,14 @@ def cut(sep: str=None, fields: List[int]=[]):
 
 @block(engine='unixlike')
 def head(n: int=0):
-    def inner(data: List[str]) -> ReturnType[List[str]]:
+    def inner(data: List[Any]) -> ReturnType[List[Any]]:
         data = data[:n]
         return ReturnEntry(result=data)
     return inner
 
 @block(engine='unixlike')
 def tail(n: int=0):
-    def inner(data: List[str]) -> ReturnType[List[str]]:
+    def inner(data: List[Any]) -> ReturnType[List[Any]]:
         data = data[-n:]
         return ReturnEntry(result=data)
     return inner
