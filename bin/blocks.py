@@ -15,10 +15,9 @@
 # limitations under the License.
 
 import argparse
-import glob
-import os
 
 from lb.graph import Graph
+from lb.plugins_manager import available_plugins
 from lb.registry import Registry
 
 def parse_args():
@@ -43,16 +42,6 @@ def parse_args():
                         help='List of plugins to activate')
     args = parser.parse_args()
     return args
-
-def available_plugins():
-    """
-    List plugins available from lb/plugins/
-    """
-    path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                        'lb',
-                        'plugins')
-    plugins = glob.glob('{}/*.py'.format(path))
-    return [os.path.basename(x).split('.')[0] for x in plugins]
 
 def import_plugins(plugins):
     """

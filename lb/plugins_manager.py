@@ -12,6 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import glob
+import os
+
+here = os.path.abspath(os.path.dirname(__file__))
+
 # global variable (singleton) containing the registered hooks
 # happening at different execution times
 HOOKS = {
@@ -20,6 +25,14 @@ HOOKS = {
     'before_graph_execution': [],
     'after_graph_execution': [],
     }
+
+def available_plugins():
+    """
+    List plugins available from lb/plugins/
+    """
+    path = os.path.join(here, 'plugins')
+    plugins = glob.glob('{}/*.py'.format(path))
+    return [os.path.basename(x).split('.')[0] for x in plugins]
 
 def _register_hook(f, hookname):
     HOOKS[hookname].append(f)
