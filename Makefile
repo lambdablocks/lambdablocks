@@ -28,3 +28,6 @@ test:
 
 test-coverage-missing:
 	nose2-3 -s tests --with-cov --coverage-report html
+
+profile:
+	python3 -m cProfile -s cumtime bin/blocks.py -f examples/unix.yml
