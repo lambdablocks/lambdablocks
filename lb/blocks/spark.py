@@ -137,7 +137,7 @@ def spark_distinct(numTasks=None):
     Spark's distinct
     """
     def inner(data: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
-        o = data.distinct(numTasks=numTasks)
+        o = data.distinct(numTasks)
         return ReturnEntry(result=o)
     return inner
 
@@ -147,7 +147,7 @@ def spark_groupByKey(numTasks=None):
     Spark's groupByKey
     """
     def inner(data: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
-        o = data.groupByKey(numTasks=numTasks)
+        o = data.groupByKey(numTasks)
         return ReturnEntry(result=o)
     return inner
 
@@ -158,7 +158,7 @@ def spark_reduceByKey(func: typing.Callable[[pyspark.rdd.RDD], pyspark.rdd.RDD]=
     Spark's reduceByKey
     """
     def inner(data: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
-        o = data.reduceByKey(func, numTasks=numTasks)
+        o = data.reduceByKey(func, numTasks)
         return ReturnEntry(result=o)
     return inner
 
@@ -171,7 +171,7 @@ def spark_aggregateByKey(zeroValue: typing.Any=None,
     Spark's aggregateByKey
     """
     def inner(data: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
-        o = data.aggregateByKey(zeroValue, seqFunc, combFunc, numTasks=numTasks)
+        o = data.aggregateByKey(zeroValue, seqFunc, combFunc, numTasks)
         return ReturnEntry(result=o)
     return inner
 
@@ -191,7 +191,7 @@ def spark_join(numTasks=None):
     Spark's join
     """
     def inner(data1: pyspark.rdd.RDD, data2: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
-        o = data1.join(data2, numTasks=numTasks)
+        o = data1.join(data2, numTasks)
         return ReturnEntry(result=o)
     return inner
 
@@ -201,7 +201,7 @@ def spark_cogroup(numTasks=None):
     Spark's cogroup
     """
     def inner(data1: pyspark.rdd.RDD, data2: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
-        o = data1.cogroup(data2, numTasks=numTasks)
+        o = data1.cogroup(data2, numTasks)
         return ReturnEntry(result=o)
     return inner
 
