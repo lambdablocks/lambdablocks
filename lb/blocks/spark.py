@@ -308,7 +308,7 @@ def spark_takeSample(withReplacement: bool=False, num: int=0, seed: int=None):
     return inner
 
 @block(engine='spark')
-def spark_takeOrdered(num: int=0, key: typing.Callable[[pyspark.rdd.RDD], pyspark.rdd.RDD]=lambda x: x):
+def spark_takeOrdered(num: int=0, key: typing.Callable[[pyspark.rdd.RDD], pyspark.rdd.RDD]=default_function(1)):
     """
     Spark's takeOrdered
     """
