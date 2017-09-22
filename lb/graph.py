@@ -234,7 +234,7 @@ class Graph(object):
                 except ValueError:
                     raise YAMLError(
                         'An input must contain a block/topology name and a value, '
-                        'such as my_block.foo. {} in block {}'.format(pair, block_dest))
+                        'such as my_block.foo. Got {} in block {}'.format(pair, block_dest.fields['name']))
                 if block_from == '$inputs':
                     # topology input
                     topology_inputs.append({'block_dest': block_dest,
