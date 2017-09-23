@@ -5,6 +5,7 @@ description: foo
 - block: spark_readfile
   name: readfile
   args:
+    master: "local[4]"
     filename: examples/loremipsum
 
 - topology: examples/topology_spark_wordcount.yml
