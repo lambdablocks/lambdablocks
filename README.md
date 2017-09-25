@@ -34,17 +34,22 @@ programming language for blocks. The engine itself is written in
 Python3. However, it is possible (and encouraged) to write other
 implementations with different language choices.
 
-## How to install
+## Installation
 
-### Debian dependencies
+### Dependencies
 
-Python libraries:
-`apt install python3 python3-yaml python3-matplotlib python3-nose2 python3-nose2-cov python3-requests-oauthlib`
+#### On Debian or Ubuntu
+
+Runtime dependencies:
+`apt install python3 python3-yaml python3-matplotlib python3-requests-oauthlib`
+
+Development dependencies:
+`apt install python3-nose2 python3-nose2-cov`
 
 If you want to write topologies based on Spark, you need to install
 Spark and pyspark.
 
-### Other systems
+#### On other systems
 
 The Python dependencies are all part of Pypi and installable through
 `pip`. It should work on all UNIX-based systems, and, who knows, on
@@ -53,14 +58,20 @@ different systems!
 
 ### Getting λ-blocks
 
-At the moment, the best way to get λ-blocks locally is to clone this
-repository. After installing the dependencies, everything should work
-out of the box.
+#### With pip
 
-### Running tests
+Clone the repository, and then:
 
-* Be sure to have all dependencies installed, system-wide or in a
-  virtualenv.
+If you want to simply install it:
+`python3 setup.py install`
+
+If you want to install it in development mode:
+`pip3 install -e .`
+
+### Running tests (optional)
+
+* Be sure to have all the development dependencies installed,
+  system-wide or in a virtualenv.
 * `source env.sh`
 * `make test`
 
