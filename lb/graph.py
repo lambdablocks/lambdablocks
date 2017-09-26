@@ -27,7 +27,10 @@ import yaml
 
 import lb.types
 from lb.exceptions import NotBoundError, YAMLError, ExecutionError
+from lb.log import get_logger
 from lb.plugins_manager import HOOKS
+
+logger = get_logger(__name__)
 
 def type_or_any(type_):
     """
@@ -150,11 +153,16 @@ class Graph(object):
         self.filename = filename
         self.filecontent = filecontent
         self.registry = registry
+        logger.debug('Parsing YAML data')
         self._parse_file()
+        logger.debug('Checking YAML data')
         self._check_yaml()
+        logger.debug('Building grah')
         self._build_dag()
         if not skip_check:
+            logger.debug('Checking graph edges and types')
             self._check_dag_inputs()
+            logger.debug('Checking graph has no loops')
             self._check_dag_no_loops()
 
     def _parse_file(self):

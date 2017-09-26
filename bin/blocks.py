@@ -15,8 +15,10 @@
 # limitations under the License.
 
 import argparse
+import logging
 
 from lb.graph import Graph
+from lb.log import get_logger
 from lb.plugins_manager import available_plugins
 from lb.registry import Registry
 
@@ -40,6 +42,10 @@ def parse_args():
                         nargs='+',
                         choices=available_plugins(),
                         help='List of plugins to activate')
+    parser.add_argument('-v', '--verbose',
+                        required=False,
+                        action='store_true',
+                        help='Verbose run, show log messages.')
     args = parser.parse_args()
     return args
 
@@ -55,16 +61,28 @@ def import_plugins(plugins):
                 print('Plugin {} could not be found. Is it in the folder `lb/plugins/`?'.format(plugin))
                 raise e
 
+
 def main():
     args = parse_args()
 
+    if not args.verbose:
+        logging.disable(logging.DEBUG)
+
+    logger = get_logger('blocks.py')
+
+    logger.debug('Starting lambda-blocks')
+    logger.debug('Creating registry and importing modules')
     registry = Registry(external_modules=args.modules,
                        load_internal_modules=args.no_internal_modules)
 
+    logger.debug('Importing configured plugins')
     import_plugins(args.plugins)
 
+    logger.debug('Creating and checking graph')
     g = Graph(filename=args.filename, registry=registry)
+    logger.debug('Executing graph')
     g.execute()
+    logger.debug('Done, exiting')
 
 if __name__ == '__main__':
     main()
