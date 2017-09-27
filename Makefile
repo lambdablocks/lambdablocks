@@ -31,3 +31,9 @@ test-coverage-missing:
 
 profile:
 	python3 -m cProfile -s cumtime bin/blocks.py -f examples/unix.yml
+
+clean:
+	git clean -d -f -X
+
+zip: clean
+	cd .. && zip -FS --exclude lambdablocks/.git/\* -r lambdablocks.zip lambdablocks/
