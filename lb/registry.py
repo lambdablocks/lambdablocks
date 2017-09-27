@@ -63,7 +63,7 @@ class Registry(object):
             try:
                 mod = importlib.import_module(module)
             except ImportError:
-                raise UnfoundModuleError('The module {} has not been found.'.format(module))
+                raise UnfoundModuleError('The module {} has not been found or could not be imported.'.format(module))
             for _, func in mod.__dict__.items():
                 if hasattr(func, '_is_block') and func._is_block:
                     self._register_block(func)
