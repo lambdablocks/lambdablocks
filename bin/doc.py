@@ -40,11 +40,14 @@ def doc_block(block_name, block_properties):
     for prop_name in ['parameters', 'inputs']:
         print(format_red('  {}:'.format(prop_name)))
         for item in block_properties['_' + prop_name].values():
-            # import pdb; pdb.set_trace()
+            if hasattr(item.annotation, '__name__'):
+                type_ = item.annotation.__name__
+            else:
+                type_ = item.annotation
             print('    - '
                   + format_green(str(item.name))
                   + ' ('
-                  + str(item.annotation.__name__)
+                  + str(type_)
                   + ')')
     output = block_properties['_output']
     if output:
