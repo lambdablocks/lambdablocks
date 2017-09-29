@@ -338,7 +338,7 @@ def spark_countByKey():
     """
     Spark's countByKey
     """
-    def inner(data: pyspark.rdd.RDD) -> typing.Mapping[typing.Any, int]:
+    def inner(data: pyspark.rdd.RDD) -> ReturnType[typing.Mapping[typing.Any, int]]:
         o = data.countByKey()
         return ReturnEntry(result=o)
     return inner
@@ -348,7 +348,7 @@ def spark_foreach(func: typing.Callable=default_function(1)):
     """
     Spark's foreach
     """
-    def inner(data: pyspark.rdd.RDD) -> typing.Any:
+    def inner(data: pyspark.rdd.RDD) -> ReturnType[typing.Any]:
         o = data.foreach(func)
         return ReturnEntry(result=o)
     return inner
