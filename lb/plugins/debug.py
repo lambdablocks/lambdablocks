@@ -47,7 +47,7 @@ def show_current_data(block, results):
                 else:
                     sys.stdout.write('{}'.format(shorten(result[0:3])))
             else:
-                print('{}'.format(shorten(result)))
-            sys.stdout.write('\n')
+                sys.stdout.write('{}'.format(shorten(result)))
+            sys.stdout.write('\n\n')
     else:
         print('  No results for this block.')
