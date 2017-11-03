@@ -466,7 +466,6 @@ class Graph(object):
         return results
 
     def before_graph_execution(self):
-        print(self.entry_points)
         for f in HOOKS['before_graph_execution']:
             f(self.vertices, self.entry_points)
 
