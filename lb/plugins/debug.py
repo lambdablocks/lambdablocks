@@ -35,18 +35,17 @@ def show_current_data(block, results):
     if results:
         for field, result in results._asdict().items():
             print('  {}'.format(field))
+            sys.stdout.write('    ')
             if isinstance(result, list):
-                sys.stdout.write('    [')
                 if isinstance(result[0], list):
                     sys.stdout.write('[')
                     if isinstance(result[0][0], list):
                         sys.stdout.write("That's quite a nested list (FIXME)")
                     else:
-                        sys.stdout.write('{}'.format(shorten(result[0][0])))
+                        sys.stdout.write('{}'.format(shorten(result[0][0:3])))
                     sys.stdout.write(']')
                 else:
-                    sys.stdout.write('{}'.format(shorten(result[0])))
-                sys.stdout.write(']')
+                    sys.stdout.write('{}'.format(shorten(result[0:3])))
             else:
                 print('{}'.format(shorten(result)))
             sys.stdout.write('\n')
