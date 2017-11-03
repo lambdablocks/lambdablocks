@@ -461,17 +461,18 @@ class Graph(object):
                     if destination.block_dest not in fun_queue:
                         fun_queue.append(destination.block_dest)
 
-        self.after_graph_execution()
+        self.after_graph_execution(results)
 
         return results
 
     def before_graph_execution(self):
+        print(self.entry_points)
         for f in HOOKS['before_graph_execution']:
-            f()
+            f(self.vertices, self.entry_points)
 
-    def after_graph_execution(self):
+    def after_graph_execution(self, results):
         for f in HOOKS['after_graph_execution']:
-            f()
+            f(results)
 
     def before_block_execution(self, block):
         for f in HOOKS['before_block_execution']:

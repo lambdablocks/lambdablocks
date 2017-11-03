@@ -38,7 +38,7 @@ def store_end_time(block, results):
     timing_by_block[name]['duration'] = timing_by_block[name]['end'] - timing_by_block[name]['begin']
 
 @after_graph_execution
-def show_times():
+def show_times(results):
     biggest_first = sorted(timing_by_block.keys(),
                            key=lambda x: timing_by_block[x]['duration'],
                            reverse=True)
