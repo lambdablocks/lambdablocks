@@ -451,9 +451,10 @@ class Graph(object):
 
                     comp_inputs[input_.value_dest] = this_res
 
-                self.before_block_execution(block)
-                results[block] = comp_fun(**comp_args)(**comp_inputs)
-                self.after_block_execution(block, results[block])
+                self.before_block_execution(block, results)
+                if block not in results.keys(): # a plugin could have computed the results
+                    results[block] = comp_fun(**comp_args)(**comp_inputs)
+                self.after_block_execution(block, results)
 
                 # we add this block's destinations to the queue,
                 # if they are not there already
@@ -473,9 +474,9 @@ class Graph(object):
         for f in HOOKS['after_graph_execution']:
             f(results)
 
-    def before_block_execution(self, block):
+    def before_block_execution(self, block, results):
         for f in HOOKS['before_block_execution']:
-            f(block)
+            f(block, results)
 
     def after_block_execution(self, block, results):
         for f in HOOKS['after_block_execution']:

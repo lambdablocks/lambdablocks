@@ -32,8 +32,9 @@ def shorten(item, length=100):
 @after_block_execution
 def show_current_data(block, results):
     print('For block {}'.format(block.fields['name']))
-    if results:
-        for field, result in results._asdict().items():
+    res = results[block]
+    if res:
+        for field, result in res._asdict().items():
             print('  {}'.format(field))
             sys.stdout.write('    ')
             if isinstance(result, list):

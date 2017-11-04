@@ -26,7 +26,7 @@ from lb.plugins_manager import before_block_execution, \
 timing_by_block = {}
 
 @before_block_execution
-def store_begin_time(block):
+def store_begin_time(block, results):
     name = block.fields['name']
     timing_by_block[name] = {}
     timing_by_block[name]['begin'] = time.time()
