@@ -25,6 +25,7 @@ side-effects to compute.  Keep that in mind.
 
 import os
 import pickle
+import tempfile
 
 from lb.cache import CacheProvider
 from lb.plugins_manager import before_block_execution, \
@@ -32,7 +33,10 @@ from lb.plugins_manager import before_block_execution, \
      after_graph_execution
 from lb.signature import sign
 
-TMPPATH = '/tmp/lb/' # FIXME
+# initiates the folder containing the cache, in a temporary location
+TMPPATH = os.path.join(tempfile.gettempdir(), 'lb-cache')
+if not os.path.exists(TMPPATH):
+    os.mkdir(TMPPATH)
 
 class DiskCacheProvider(CacheProvider):
     def set(self, key, value):
