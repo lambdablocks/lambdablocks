@@ -30,6 +30,7 @@ from lb.cache import CacheProvider
 from lb.plugins_manager import before_block_execution, \
      after_block_execution, \
      after_graph_execution
+from lb.signature import sign
 
 TMPPATH = '/tmp/lb/' # FIXME
 
@@ -47,8 +48,6 @@ class DiskCacheProvider(CacheProvider):
             return value
 
 this_cache = DiskCacheProvider()
-
-from lb.signature import sign
 
 @before_block_execution
 def skip_exec_if_cached(block, results):
