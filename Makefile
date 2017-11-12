@@ -14,7 +14,7 @@
 
 # Makefile
 
-# install and develop probably require admin priviliges, unless they
+# install and develop probably require admin privileges, unless they
 # are run in a virtual environment.
 
 install:
