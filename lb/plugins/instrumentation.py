@@ -39,14 +39,14 @@ def store_end_time(block, results):
 
 @after_graph_execution
 def show_times(results):
-    biggest_first = sorted(timing_by_block.keys(),
+    longest_first = sorted(timing_by_block.keys(),
                            key=lambda x: timing_by_block[x]['duration'],
                            reverse=True)
     print('######################################################')
     print('###             Instrumentation report             ###')
     print('######################################################')
     print('block\tduration (ms)\tbegin\tend')
-    for blockname in biggest_first:
+    for blockname in longest_first:
         print('{}\t{}\t{}\t{}'.format(
             blockname,
             1000 * timing_by_block[blockname]['duration'],
