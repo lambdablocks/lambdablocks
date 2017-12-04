@@ -142,3 +142,26 @@ Let's try to execute this graph::
 
 That's it! You should get a list of fruits, along with their number of
 occurences.
+
+Using plugins
+-------------
+
+λ-blocks, while processing a computation graph, can execute plugins,
+which are pieces of Python code able to act on the graph. For example,
+let's try the included `debug` plugin::
+
+   blocks.py -f wordcount.yml -p debug
+
+This plugin will display an excerpt of the results produced by each
+block, which allows you to effectively see what every block is
+doing. This is useful to follow the data as it is transformed from the
+entry of the graph to all the following vertices.
+
+You can also try to execute the `instrumentation` plugin the same way,
+which will measure the time taken by every block to compute, useful to
+detect bottlenecks::
+
+   blocks.py -f wordcount.yml -p debug -p instrumentation
+
+Unsurprisingly, the `cat` block should be the slowest, because it
+requires to read a file on disk.
