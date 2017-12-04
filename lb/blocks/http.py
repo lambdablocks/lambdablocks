@@ -12,6 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+This module contains blocks for performing HTTP operations.
+"""
+
 import urllib.request
 
 from lb.registry import block
@@ -20,6 +24,14 @@ from lb.utils import ReturnEntry
 
 @block(engine='http')
 def read_http(url: str='', encoding: str='utf8'):
+    """Performs an HTTP GET requrest, and returns its result.
+
+    :param url: The requested URL.
+    :type url: str.
+    :param encoding: How the result should be decoded.
+    :type encoding: str.
+    :returns: A ReturnEntry containing one field, *result*.
+    """
     def inner() -> ReturnType[str]:
         with urllib.request.urlopen(url) as response:
             data = response.read().decode(encoding)

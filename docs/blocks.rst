@@ -1,5 +1,5 @@
-Available block modules
-=======================
+Available blocks
+================
 
 http
 ----
