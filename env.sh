@@ -1,2 +1,0 @@
-export PYSPARK_PYTHON=python3
-export PYTHONPATH=$PYTHONPATH:.
