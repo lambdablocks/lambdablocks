@@ -1,6 +1,6 @@
 ---
 name: Unix
-description: foo
+description: Example of a graph using unix-like pipes. Shows the root account from /etc/passwd.
 ---
 - block: cat
   name: cat
@@ -10,7 +10,7 @@ description: foo
 - block: grep
   name: grep
   args:
-    pattern: ma
+    pattern: root
   inputs:
     data: cat.result
 
