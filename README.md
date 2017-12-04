@@ -34,53 +34,8 @@ programming language for blocks. The engine itself is written in
 Python3. However, it is possible (and encouraged) to write other
 implementations with different language choices.
 
-## Installation
+## Documentation
 
-### Dependencies
+[The documentation of λ-blocks is available on ReadTheDocs](http://lambdablocks.readthedocs.io).
 
-#### On Debian or Ubuntu
-
-Runtime dependencies:
-`apt install python3 python3-yaml python3-matplotlib python3-requests-oauthlib`
-
-Development dependencies:
-`apt install python3-nose2 python3-nose2-cov python3-sphinx`
-
-If you want to write topologies based on Spark, you need to install
-Spark and pyspark.
-
-#### On other systems
-
-The Python dependencies are all part of Pypi and installable through
-`pip`. It should work on all UNIX-based systems, and, who knows, on
-Windows. Be sure to report installation failures/successes on
-different systems!
-
-### Getting λ-blocks
-
-#### With pip
-
-Clone the repository, and then:
-
-If you want to simply install it:
-`python3 setup.py install`
-
-If you want to install it in development mode:
-`pip3 install -e .`
-
-### Running tests (optional)
-
-* Be sure to have all the development dependencies installed,
-  system-wide or in a virtualenv.
-* `source env.sh`
-* `make test`
-
-## Examples
-
-The folder `examples` shows some basic examples of what you can do
-with λ-blocks. To run them:
-
-```
-source env.sh
-python3 bin/blocks.py -f examples/display_wordcount.yml
-```
+You'll find the information needed to install and run it.
