@@ -28,6 +28,7 @@ block collections and plugins.
    :maxdepth: 2
 
    tutorial
+   developers
    blocks
    plugins
    api
