@@ -44,7 +44,7 @@ Runtime dependencies:
 `apt install python3 python3-yaml python3-matplotlib python3-requests-oauthlib`
 
 Development dependencies:
-`apt install python3-nose2 python3-nose2-cov`
+`apt install python3-nose2 python3-nose2-cov python3-sphinx`
 
 If you want to write topologies based on Spark, you need to install
 Spark and pyspark.
