@@ -161,7 +161,7 @@ You can also try to execute the `instrumentation` plugin the same way,
 which will measure the time taken by every block to compute, useful to
 detect bottlenecks::
 
-   blocks.py -f wordcount.yml -p debug -p instrumentation
+   blocks.py -f wordcount.yml -p debug instrumentation
 
 Unsurprisingly, the `cat` block should be the slowest, because it
 requires to read a file on disk.
