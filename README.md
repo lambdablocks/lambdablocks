@@ -38,4 +38,5 @@ implementations with different language choices.
 
 [The documentation of λ-blocks is available on ReadTheDocs](http://lambdablocks.readthedocs.io).
 
-You'll find the information needed to install and run it.
+You'll find there the information needed to install the framework and
+run your programs.
