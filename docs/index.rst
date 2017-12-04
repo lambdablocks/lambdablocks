@@ -34,6 +34,7 @@ block collections and plugins.
 
    tutorial
    developers
+   examples
    blocks
    plugins
    api
