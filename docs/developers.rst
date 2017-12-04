@@ -13,8 +13,7 @@ Tests
 
 To run the tests::
 
-   source env.sh
-   make test
+   PYTHONPATH=. make test
 
 Development mode
 ----------------
