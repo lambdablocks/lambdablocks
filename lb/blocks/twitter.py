@@ -12,6 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Blocks to interact with the Twitter API.
+"""
+
 import json
 
 from typing import List
