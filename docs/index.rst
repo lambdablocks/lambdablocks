@@ -33,10 +33,10 @@ block collections and plugins.
    :maxdepth: 2
 
    tutorial
-   developers
    examples
    blocks
    plugins
+   developers
    api
 
 Indices and tables
