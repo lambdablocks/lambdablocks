@@ -15,12 +15,12 @@
 """
 Provides a cache through disk.
 
-/!\ Warning: this is not safe from attacks.  As it uses the `pickle`
-module, it could be led to unpickle unsafe data, if an attacker got an
-access to the filesystem.  Use at your own risk.
+.. WARNING:: This is not safe from attacks.  As it uses the `pickle`
+   module, it could be led to unpickle unsafe data, if an attacker got an
+   access to the filesystem.  Use at your own risk.
 
-Warning: this cache is functional, but will prevent blocks with
-side-effects to compute.  Keep that in mind.
+.. NOTE:: This cache is functional, but will prevent blocks with
+   side-effects to compute.  Keep that in mind.
 """
 
 import os

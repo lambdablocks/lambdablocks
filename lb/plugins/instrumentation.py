@@ -13,8 +13,9 @@
 # limitations under the License.
 
 """
-Instrumentation is an example of a Graph extension: it measures the
-time taken by blocks to execute, and reports them at the end.
+The instrumentation plugin measures the time taken by blocks to
+execute, and reports them at the end.  This is useful to spot
+bottlenecks, in order to optimize slow blocks.
 """
 
 import time

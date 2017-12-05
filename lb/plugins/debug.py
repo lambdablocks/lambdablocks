@@ -13,8 +13,10 @@
 # limitations under the License.
 
 """
-Debug plugin, prints an excerpt of each block's result after its
-execution.
+The debug plugin prints an excerpt of each block's result after its
+execution, it is useful to visualize the evolution of data
+transformations through the graph, and spot where something goes
+wrong.
 """
 
 import sys
