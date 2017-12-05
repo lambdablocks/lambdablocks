@@ -24,13 +24,11 @@ from lb.utils import ReturnEntry
 
 @block(engine='http')
 def read_http(url: str='', encoding: str='utf8'):
-    """Performs an HTTP GET requrest, and returns its result.
+    """Performs an HTTP GET request, and returns its result.
 
-    :param url: The requested URL.
-    :type url: str.
-    :param encoding: How the result should be decoded.
-    :type encoding: str.
-    :returns: A ReturnEntry containing one field, *result*.
+    :param str url: The requested URL.
+    :param str encoding: How the result should be decoded.
+    :output str result: The content returned by the request.
     """
     def inner() -> ReturnType[str]:
         with urllib.request.urlopen(url) as response:
