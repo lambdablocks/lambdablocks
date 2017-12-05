@@ -25,10 +25,11 @@ from lb.utils import ReturnEntry, default_function
 SC = None
 
 def get_spark_context(master):
-    """
-    Creates a Spark context.  Useful to have it in a function,
+    """Creates a Spark context. Useful to have it in a function,
     otherwise within a module it will be created at import time, even
     if not used.
+
+    Not a block; not for use in a graph.
     """
     global SC
     if SC is None:
@@ -40,9 +41,13 @@ def get_spark_context(master):
 # Transformations
 
 @block(engine='spark')
-def spark_readfile(master: str='local[4]', appname='lambdablocks', filename: str=None):
-    """
-    Reads a file and returns an RDD ready to act on it.
+def spark_readfile(master: str='local[4]', appname: str='lambdablocks', filename: str=None):
+    """Reads a file and returns an RDD ready to act on it.
+
+    :param str master: Spark's master.
+    :param str appname: Spark's application name.
+    :param str filename: The file to be read.
+    :output RDD result: The resulting RDD.
     """
     def inner() -> ReturnType[pyspark.rdd.RDD]:
         spark_context = get_spark_context(master)
@@ -52,8 +57,11 @@ def spark_readfile(master: str='local[4]', appname='lambdablocks', filename: str
 
 @block(engine='spark')
 def spark_text_to_words(lowercase: bool=False):
-    """
-    Converts a line of text into a list of words.
+    """Converts a line of text into a list of words.
+
+    :param bool lowercase: If the text should also be converted to lowercase.
+    :input RDD line: The line to convert.
+    :output RDD result: The resulting RDD.
     """
     def inner(line: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
         if lowercase:
@@ -70,8 +78,11 @@ def spark_text_to_words(lowercase: bool=False):
 
 @block(engine='spark')
 def spark_map(func: typing.Callable[[pyspark.rdd.RDD], pyspark.rdd.RDD]=default_function(1)):
-    """
-    Spark's map
+    """Spark's map
+
+    :param Callable func: The function to apply.
+    :input RDD data: The RDD to convert.
+    :output RDD result: The resulting RDD.
     """
     def inner(data: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
         o = data.map(func)
@@ -80,8 +91,11 @@ def spark_map(func: typing.Callable[[pyspark.rdd.RDD], pyspark.rdd.RDD]=default_
 
 @block(engine='spark')
 def spark_filter(func: typing.Callable[[pyspark.rdd.RDD], pyspark.rdd.RDD]=default_function(1)):
-    """
-    Spark's filter
+    """Spark's filter
+
+    :param Callable func: The function to apply.
+    :input RDD data: The RDD to convert.
+    :output RDD result: The resulting RDD.
     """
     def inner(data: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
         o = data.filter(func)
@@ -90,8 +104,11 @@ def spark_filter(func: typing.Callable[[pyspark.rdd.RDD], pyspark.rdd.RDD]=defau
 
 @block(engine='spark')
 def spark_flatMap(func: typing.Callable[[pyspark.rdd.RDD], pyspark.rdd.RDD]=default_function(1)):
-    """
-    Spark's flatMap
+    """Spark's flatMap
+
+    :param Callable func: The function to apply.
+    :input RDD data: The RDD to convert.
+    :output RDD result: The resulting RDD.
     """
     def inner(data: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
         o = data.flatMap(func)
@@ -100,8 +117,11 @@ def spark_flatMap(func: typing.Callable[[pyspark.rdd.RDD], pyspark.rdd.RDD]=defa
 
 @block(engine='spark')
 def spark_mapPartitions(func: typing.Callable[[pyspark.rdd.RDD], pyspark.rdd.RDD]=default_function(1)):
-    """
-    Spark's mapPartitions
+    """Spark's mapPartitions
+
+    :param Callable func: The function to apply.
+    :input RDD data: The RDD to convert.
+    :output RDD result: The resulting RDD.
     """
     def inner(data: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
         o = data.mapPartitions(func)
@@ -110,8 +130,13 @@ def spark_mapPartitions(func: typing.Callable[[pyspark.rdd.RDD], pyspark.rdd.RDD
 
 @block(engine='spark')
 def spark_sample(withReplacement: bool=False, fraction: float=0.1, seed: int=1):
-    """
-    Spark's sample
+    """Spark's sample
+
+    :param bool withReplacement: Default to false.
+    :param float fraction: The quantity to sample.
+    :param int seed: Seed.
+    :input RDD data: The RDD to convert.
+    :output RDD result: The resulting RDD.
     """
     def inner(data: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
         o = data.sample(withReplacement, fraction, seed)
@@ -120,8 +145,11 @@ def spark_sample(withReplacement: bool=False, fraction: float=0.1, seed: int=1):
 
 @block(engine='spark')
 def spark_union():
-    """
-    Spark's union
+    """Spark's union
+
+    :input RDD data1: The first RDD.
+    :input RDD data2: The second RDD.
+    :output RDD result: The resulting RDD.
     """
     def inner(data1: pyspark.rdd.RDD, data2: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
         o = data1.union(data2)
@@ -130,8 +158,11 @@ def spark_union():
 
 @block(engine='spark')
 def spark_intersection():
-    """
-    Spark's intersection
+    """Spark's intersection
+
+    :input RDD data1: The first RDD.
+    :input RDD data2: The second RDD.
+    :output RDD result: The resulting RDD.
     """
     def inner(data1: pyspark.rdd.RDD, data2: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
         o = data1.intersection(data2)
@@ -140,8 +171,10 @@ def spark_intersection():
 
 @block(engine='spark')
 def spark_distinct(numTasks=None):
-    """
-    Spark's distinct
+    """Spark's distinct
+
+    :input RDD data: The RDD to convert.
+    :output RDD result: The resulting RDD.
     """
     def inner(data: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
         o = data.distinct(numTasks)
@@ -150,8 +183,10 @@ def spark_distinct(numTasks=None):
 
 @block(engine='spark')
 def spark_groupByKey(numTasks=None):
-    """
-    Spark's groupByKey
+    """Spark's groupByKey
+
+    :input RDD data: The RDD to convert.
+    :output RDD result: The resulting RDD.
     """
     def inner(data: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
         o = data.groupByKey(numTasks)
@@ -161,8 +196,12 @@ def spark_groupByKey(numTasks=None):
 @block(engine='spark')
 def spark_reduceByKey(func: typing.Callable[[pyspark.rdd.RDD], pyspark.rdd.RDD]=default_function(1),
                 numTasks=None):
-    """
-    Spark's reduceByKey
+    """Spark's reduceByKey
+
+    :param Callable func: The function to apply.
+    :param numTasks: Number of tasks.
+    :input RDD data: The RDD to convert.
+    :output RDD result: The resulting RDD.
     """
     def inner(data: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
         o = data.reduceByKey(func, numTasks)
@@ -174,8 +213,14 @@ def spark_aggregateByKey(zeroValue: typing.Any=None,
                    seqFunc: typing.Callable[[pyspark.rdd.RDD], pyspark.rdd.RDD]=default_function(1),
                    combFunc: typing.Callable[[pyspark.rdd.RDD], pyspark.rdd.RDD]=default_function(1),
                    numTasks=None):
-    """
-    Spark's aggregateByKey
+    """Spark's aggregateByKey
+
+    :param Any zeroValue:
+    :param Callable seqFunc:
+    :param Callable combFunc:
+    :param numTasks:
+    :input RDD data: The RDD to convert.
+    :output RDD result: The resulting RDD.
     """
     def inner(data: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
         o = data.aggregateByKey(zeroValue, seqFunc, combFunc, numTasks)
@@ -184,8 +229,10 @@ def spark_aggregateByKey(zeroValue: typing.Any=None,
 
 @block(engine='spark')
 def spark_sortByKey(ascending=True):
-    """
-    Spark's sortByKey
+    """Spark's sortByKey
+
+    :input RDD data: The RDD to convert.
+    :output RDD result: The resulting RDD.
     """
     def inner(data: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
         o = data.sortByKey(ascending=ascending)
@@ -194,8 +241,11 @@ def spark_sortByKey(ascending=True):
 
 @block(engine='spark')
 def spark_join(numTasks=None):
-    """
-    Spark's join
+    """Spark's join
+
+    :input RDD data1: The first RDD.
+    :input RDD data2: The second RDD.
+    :output RDD result: The resulting RDD.
     """
     def inner(data1: pyspark.rdd.RDD, data2: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
         o = data1.join(data2, numTasks)
@@ -204,8 +254,11 @@ def spark_join(numTasks=None):
 
 @block(engine='spark')
 def spark_cogroup(numTasks=None):
-    """
-    Spark's cogroup
+    """Spark's cogroup
+
+    :input RDD data1: The first RDD.
+    :input RDD data2: The second RDD.
+    :output RDD result: The resulting RDD.
     """
     def inner(data1: pyspark.rdd.RDD, data2: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
         o = data1.cogroup(data2, numTasks)
@@ -214,8 +267,11 @@ def spark_cogroup(numTasks=None):
 
 @block(engine='spark')
 def spark_cartesian():
-    """
-    Spark's cartesian
+    """Spark's cartesian
+
+    :input RDD data1: The first RDD.
+    :input RDD data2: The second RDD.
+    :output RDD result: The resulting RDD.
     """
     def inner(data1: pyspark.rdd.RDD, data2: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
         o = data1.cartesian(data2)
@@ -226,6 +282,10 @@ def spark_cartesian():
 def spark_pipe(command: str=''):
     """
     Spark's pipe
+
+    :param str command: The command to pipe to.
+    :input RDD data: The RDD to convert.
+    :output RDD result: The resulting RDD.
     """
     def inner(data: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
         o = data.pipe(command)
@@ -234,8 +294,11 @@ def spark_pipe(command: str=''):
 
 @block(engine='spark')
 def spark_coalesce(numPartitions: int=1):
-    """
-    Spark's coalesce
+    """Spark's coalesce
+
+    :param int numPartitions:
+    :input RDD data: The RDD to convert.
+    :output RDD result: The resulting RDD.
     """
     def inner(data: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
         o = data.coalesce(numPartitions)
@@ -244,8 +307,11 @@ def spark_coalesce(numPartitions: int=1):
 
 @block(engine='spark')
 def spark_repartition(numPartitions: int=1):
-    """
-    Spark's repartition
+    """Spark's repartition
+
+    :param int numPartitions:
+    :input RDD data: The RDD to convert.
+    :output RDD result: The resulting RDD.
     """
     def inner(data: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
         o = data.coalesce(numPartitions)
@@ -258,6 +324,10 @@ def spark_repartition(numPartitions: int=1):
 def spark_reduce(func: typing.Callable[[pyspark.rdd.RDD, pyspark.rdd.RDD], pyspark.rdd.RDD]=default_function(2)):
     """
     Spark's reduce
+
+    :param Callable func: The function to apply.
+    :input RDD data: The RDD to convert.
+    :output RDD result: The resulting RDD.
     """
     def inner(data: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
         o = data.reduce(func)
@@ -266,8 +336,10 @@ def spark_reduce(func: typing.Callable[[pyspark.rdd.RDD, pyspark.rdd.RDD], pyspa
 
 @block(engine='spark')
 def spark_collect():
-    """
-    Spark's collect
+    """Spark's collect
+
+    :input RDD data: The RDD to collect.
+    :output list result: The collected list.
     """
     def inner(data: pyspark.rdd.RDD) -> ReturnType[list]:
         o = data.collect()
@@ -276,8 +348,10 @@ def spark_collect():
 
 @block(engine='spark')
 def spark_count():
-    """
-    Spark's count
+    """Spark's count
+
+    :input RDD data: The RDD to count.
+    :output int result: The number of items in the RDD.
     """
     def inner(data: pyspark.rdd.RDD) -> ReturnType[int]:
         o = data.count()
@@ -286,8 +360,10 @@ def spark_count():
 
 @block(engine='spark')
 def spark_first():
-    """
-    Spark's first
+    """Spark's first
+
+    :input RDD data: The RDD to convert.
+    :output Any result: The first item of the RDD.
     """
     def inner(data: pyspark.rdd.RDD) -> ReturnType[typing.Any]:
         o = data.first()
@@ -296,8 +372,11 @@ def spark_first():
 
 @block(engine='spark')
 def spark_take(n: int=0):
-    """
-    Spark's take
+    """Spark's take
+
+    :param int n: The number of items to take
+    :input RDD data: The RDD to convert.
+    :output Any result: The first *n* item of the RDD.
     """
     def inner(data: pyspark.rdd.RDD) -> ReturnType[list]:
         o = data.take(n)
@@ -306,8 +385,13 @@ def spark_take(n: int=0):
 
 @block(engine='spark')
 def spark_takeSample(withReplacement: bool=False, num: int=0, seed: int=None):
-    """
-    Spark's takeSample
+    """Spark's takeSample
+
+    :param bool withReplacement:
+    :param int num:
+    :param int seed:
+    :input RDD data: The RDD to convert.
+    :output list result: The resulting list.
     """
     def inner(data: pyspark.rdd.RDD) -> ReturnType[list]:
         o = data.takeSample(withReplacement, num, seed)
@@ -316,8 +400,12 @@ def spark_takeSample(withReplacement: bool=False, num: int=0, seed: int=None):
 
 @block(engine='spark')
 def spark_takeOrdered(num: int=0, key: typing.Callable[[pyspark.rdd.RDD], pyspark.rdd.RDD]=default_function(1)):
-    """
-    Spark's takeOrdered
+    """Spark's takeOrdered
+
+    :param int num:
+    :param int key:
+    :input RDD data: The RDD to convert.
+    :output list result: The resulting list.
     """
     def inner(data: pyspark.rdd.RDD) -> ReturnType[list]:
         o = data.takeOrdered(num, key=key)
@@ -326,8 +414,10 @@ def spark_takeOrdered(num: int=0, key: typing.Callable[[pyspark.rdd.RDD], pyspar
 
 @block(engine='spark')
 def spark_saveAsTextFile(path: str=''):
-    """
-    Spark's saveAsTextFile
+    """Spark's saveAsTextFile
+
+    :param str path: The file path.
+    :input RDD data: The RDD to save.
     """
     def inner(data: pyspark.rdd.RDD):
         data.saveAsTextFile(path)
@@ -335,8 +425,10 @@ def spark_saveAsTextFile(path: str=''):
 
 @block(engine='spark')
 def spark_countByKey():
-    """
-    Spark's countByKey
+    """Spark's countByKey
+
+    :input RDD data: The RDD to convert.
+    :output Mapping(Any, int) result: The mapping of the elements to their number of occurences.
     """
     def inner(data: pyspark.rdd.RDD) -> ReturnType[typing.Mapping[typing.Any, int]]:
         o = data.countByKey()
@@ -345,8 +437,11 @@ def spark_countByKey():
 
 @block(engine='spark')
 def spark_foreach(func: typing.Callable=default_function(1)):
-    """
-    Spark's foreach
+    """Spark's foreach
+
+    :param Callable func: The function to apply.
+    :input RDD data: The RDD to convert.
+    :output Any result: The result.
     """
     def inner(data: pyspark.rdd.RDD) -> ReturnType[typing.Any]:
         o = data.foreach(func)
@@ -357,6 +452,11 @@ def spark_foreach(func: typing.Callable=default_function(1)):
 
 @block(engine='spark')
 def spark_add():
+    """ReduceByKey with the addition function.
+
+    :input RDD data: The RDD to convert.
+    :output Any result: The result.
+    """
     def inner(data: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
         o = data.reduceByKey(lambda a,b: a+b)
         return ReturnEntry(result=o)
@@ -364,6 +464,13 @@ def spark_add():
 
 @block(engine='spark')
 def spark_swap():
+    """Swaps pairs.
+
+    ```[(a,b),(c,d)] -> [(b,a),(d,c)]```
+
+    :input RDD data: The RDD to convert.
+    :output Any result: The result.
+    """
     def inner(data: pyspark.rdd.RDD) -> ReturnType[pyspark.rdd.RDD]:
         o = data.map(lambda x: (x[1],x[0]))
         return ReturnEntry(result=o)
