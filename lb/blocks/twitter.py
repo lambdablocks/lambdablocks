@@ -28,11 +28,20 @@ def twitter_search(query: str='',
                    result_type: str='recent',
                    client_key: str='', client_secret: str='',
                    resource_owner_key: str='', resource_owner_secret: str=''):
-    """
-    Performs the given query on the Twitter feed, with the
-    right credentials over OAuth1.  Refer to
-    https://dev.twitter.com/rest/public/search
-    for query options.
+    """Search a query on Twitter.
+
+    Performs the given query on the Twitter feed, with the right
+    credentials over OAuth1.  Refer to
+    https://dev.twitter.com/rest/public/search for query options.
+
+    :param str query: The query to perform.
+    :param int count: The number of results.
+    :param str result_type: The result type (defaults to 'recent').
+    :param str client_key:
+    :param str client_secret:
+    :param str resource_owner_key:
+    :param str resource_owner_secret:
+    :output json result: The result of the query.
     """
     def inner() -> ReturnType[List[List[dict]]]:
         twitter = OAuth1Session(client_key,
