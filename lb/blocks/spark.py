@@ -24,7 +24,7 @@ from lb.utils import ReturnEntry, default_function
 # Initialised on demand to avoid losing time when this file is imported but not used.
 SC = None
 
-def get_spark_context(master):
+def get_spark_context(master, appname='lambdablocks'):
     """Creates a Spark context. Useful to have it in a function,
     otherwise within a module it will be created at import time, even
     if not used.
@@ -33,7 +33,7 @@ def get_spark_context(master):
     """
     global SC
     if SC is None:
-        SC = pyspark.SparkContext(master, 'lambdablocks')
+        SC = pyspark.SparkContext(master, appname)
     return SC
 
 ### Standard Spark programming library
@@ -50,7 +50,7 @@ def spark_readfile(master: str='local[4]', appname: str='lambdablocks', filename
     :output RDD result: The resulting RDD.
     """
     def inner() -> ReturnType[pyspark.rdd.RDD]:
-        spark_context = get_spark_context(master)
+        spark_context = get_spark_context(master, appname)
         o = spark_context.textFile(filename)
         return ReturnEntry(result=o)
     return inner
