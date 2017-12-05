@@ -12,12 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+This module is a wrapper around `Matplotlib <http://matplotlib.org/>`_.
+"""
+
 import matplotlib.pyplot as plt
 
 from lb.registry import block
 
 @block(engine='matplotlib')
 def plot_bars():
+    """Generates a bar plot.
+
+    :input list bar_values: The values to plot, in the form of a list of tuples (value, label).
+    """
     def inner(bar_values: list) -> None:
         axis_y = [x[0] for x in bar_values]
         axis_x = range(len(axis_y))
