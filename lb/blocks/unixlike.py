@@ -12,6 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+This module contains various blocks, which look like their UNIX
+friends.
+"""
+
+
 from lb.registry import block
 from lb.types import ReturnType
 from lb.utils import ReturnEntry
@@ -20,6 +26,11 @@ from typing import List, Any
 
 @block(engine='unixlike')
 def cat(filename: str=None):
+    """Reads a file.
+
+    :param str filename: The file to read.
+    :output List[str] result: The lines of the file.
+    """
     def inner() -> ReturnType[List[str]]:
         data = None
         with open(filename) as f:
@@ -29,6 +40,12 @@ def cat(filename: str=None):
 
 @block(engine='unixlike')
 def grep(pattern: str=None):
+    """Greps content.
+
+    :param str pattern: The pattern to grep for.
+    :input List[str] data: The data to grep.
+    :input List[str] result: The grepped list of string.
+    """
     def inner(data: List[str]) -> ReturnType[List[str]]:
         data = list(filter(lambda x: pattern in x, data))
         return ReturnEntry(result=data)
@@ -36,6 +53,13 @@ def grep(pattern: str=None):
 
 @block(engine='unixlike')
 def cut(sep: str=None, fields: List[int]=[]):
+    """Cuts content.
+
+    :param str sep: The separator.
+    :param List[int] fields: The fields to extract.
+    :input List[str] data: The list of strings to cut.
+    :output List[str] result: The cut list of string.
+    """
     def inner(data: List[str]) -> ReturnType[List[str]]:
         fields_ = [y - 1 for y in fields] # 'cut' fields are indexed from 1
         result = []
@@ -47,6 +71,12 @@ def cut(sep: str=None, fields: List[int]=[]):
 
 @block(engine='unixlike')
 def head(n: int=0):
+    """Keeps the beginning.
+
+    :input int n: How many items to keep.
+    :input List[Any] data: Input data.
+    :output List[Any] result: Shortened output.
+    """
     def inner(data: List[Any]) -> ReturnType[List[Any]]:
         data = data[:n]
         return ReturnEntry(result=data)
@@ -54,6 +84,12 @@ def head(n: int=0):
 
 @block(engine='unixlike')
 def tail(n: int=0):
+    """Keeps the end.
+
+    :input int n: How many items to keep.
+    :input List[Any] data: Input data.
+    :output List[Any] result: Shortened output.
+    """
     def inner(data: List[Any]) -> ReturnType[List[Any]]:
         data = data[-n:]
         return ReturnEntry(result=data)
