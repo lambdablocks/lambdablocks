@@ -19,6 +19,10 @@
 #
 import os
 import sys
+
+from sphinx.util.docfields import TypedField
+from sphinx.domains.python import PyObject
+
 lb_path = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'lb')
 sys.path.insert(0, lb_path)
 
@@ -175,5 +179,12 @@ texinfo_documents = [
      'Miscellaneous'),
 ]
 
+def setup(app):
+    # we create the :input: and :output: directives
+    inputs = TypedField('input', label='Inputs',
+                        names=['input'], can_collapse=True)
+    outputs = TypedField('ou tput', label='Outputs',
+                         names=['output'], can_collapse=True)
 
-
+    # FIXME, hackish
+    PyObject.doc_field_types.extend([inputs, outputs])
