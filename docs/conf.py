@@ -19,7 +19,8 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../lb'))
+lb_path = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'lb')
+sys.path.insert(0, lb_path)
 
 
 # -- General configuration ------------------------------------------------
