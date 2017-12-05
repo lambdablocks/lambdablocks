@@ -274,17 +274,6 @@ class Graph(object):
         self.vertices = vertices
         self.entry_points = entry_points
 
-    def show_dag(self):
-        for v in self.vertices.values():
-            print(v.fields['name'])
-            print(' from:')
-            for prev in v.prev_vertices:
-                print('  {} -> {}'.format(prev.block_from.fields['name'], prev.value_from))
-            print(' to:')
-            for to in v.next_vertices:
-                print('  {} -> {}'.format(to.block_dest.fields['name'], to.value_dest))
-            print('____________________')
-
     def _check_yaml(self):
         """
         Checks that the YAML file is correctly typed.
