@@ -25,23 +25,26 @@ Let H the signature algorithm, and h a cryptographically secure hash
 function.
 
 B is a block, whose inputs are:
-  - right: bar.result
-  - left: foo.result
+  * right: ``bar.result``
+  * left: ``foo.result``
 and args are:
-  - abc: 123
-  - cba: ['x', 'y']
+  * abc: ``123``
+  * cba: ``['x', 'y']``
 
-H(block) = h([
-  block.blockname,                 <--- the *block* name, not the *instance* name
-  [
-    ('abc', 123),                  <--+ ordered by arg name
-    ('cba', ['x', 'y'])            <--|
-  ],
-  [
-    ('left', H(foo), 'result'),    <--+ ordered by input name
-    ('right', H(bar), 'result')    <--|
-  ]
-])
+::
+
+   H(block) = h([
+     block.blockname,                 <--- the *block* name, not the *instance* name
+     [
+       ('abc', 123),                  <--+ ordered by arg name
+       ('cba', ['x', 'y'])            <--|
+     ],
+     [
+       ('left', H(foo), 'result'),    <--+ ordered by input name
+       ('right', H(bar), 'result')    <--|
+     ]
+   ])
+
 """
 
 import hashlib
