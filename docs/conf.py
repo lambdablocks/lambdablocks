@@ -179,6 +179,12 @@ texinfo_documents = [
      'Miscellaneous'),
 ]
 
+def shorten_signatures(app, what, name, obj, options, signature, return_annotation):
+    """ Makes the signatures of blocks shorter (without args).
+    """
+    if what == 'function' and name.startswith('lb.blocks.'):
+        return ('()', return_annotation)
+
 def setup(app):
     # we create the :input: and :output: directives
     inputs = TypedField('input', label='Inputs',
@@ -188,3 +194,6 @@ def setup(app):
 
     # FIXME, hackish
     PyObject.doc_field_types.extend([inputs, outputs])
+
+    # register the signature modifier
+    app.connect("autodoc-process-signature", shorten_signatures)
