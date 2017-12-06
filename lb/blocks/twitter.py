@@ -13,7 +13,8 @@
 # limitations under the License.
 
 """
-Blocks to interact with the Twitter API.
+Blocks to interact with the Twitter API.  To use this module, you need
+to install requests-oauthlib, for example though pip.
 """
 
 import json

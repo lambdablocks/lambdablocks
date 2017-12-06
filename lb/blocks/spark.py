@@ -13,7 +13,8 @@
 # limitations under the License.
 
 """
-Wrappers around Apache Spark API.
+Wrappers around `Apache Spark <http://spark.apache.org/>`_ API.  To
+use this module, you need to install Spark and pyspark.
 """
 
 import typing

@@ -13,7 +13,9 @@
 # limitations under the License.
 
 """
-This module is a wrapper around `Matplotlib <http://matplotlib.org/>`_.
+This module is a wrapper around `Matplotlib
+<http://matplotlib.org/>`_.  You need matplotlib to use it: ``pip
+install matplotlib``.
 """
 
 import matplotlib.pyplot as plt
