@@ -22,8 +22,12 @@ import importlib
 import inspect
 import pkgutil
 
+from lb.log import get_logger
 import lb.blocks
 from lb.exceptions import BlockError, UnfoundModuleError
+
+logger = get_logger(__name__)
+
 
 def block(**kwargs):
     """
@@ -63,10 +67,12 @@ class Registry(object):
             try:
                 mod = importlib.import_module(module)
             except ImportError:
-                raise UnfoundModuleError('The module {} has not been found or could not be imported.'.format(module))
-            for _, func in mod.__dict__.items():
-                if hasattr(func, '_is_block') and func._is_block:
-                    self._register_block(func)
+                logger.warning('Module {} could not be imported, it was '
+                    'either not found or misses one or more dependency.'.format(module))
+            else:
+                for _, func in mod.__dict__.items():
+                    if hasattr(func, '_is_block') and func._is_block:
+                        self._register_block(func)
 
     def _register_block(self, func):
         """
