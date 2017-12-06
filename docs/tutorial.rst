@@ -13,15 +13,11 @@ Dependencies
 If you're using Debian, Ubuntu, or a system of this family, the
 required dependencies should all be available in your package manager::
 
-   apt install python3 python3-yaml
-
-Also not required for this tutorial, these dependencies are needed for
-some blocks in the included library::
-
-   apt install python3-matplotlib python3-requests-oauthlib
+   apt install python3 python3-venv libyaml-dev
 
 If you're not using Debian or a Debian-based system, be sure to
-install Python 3, and PyYAML through `pip`.
+install Python 3 and the development headers of ``libyaml``, this is
+necessary for ``pip`` to compile PyYAML.
 
 Finally, if you want to use the Spark blocks, you will need Spark and
 Pyspark to be installed on your system (but this is not required for
@@ -32,16 +28,25 @@ this tutorial).
 
 While λ-blocks is still in its early days of development, it is not
 available through `pip`, nor in any distribution package
-manager. Therefore, you can install it this way::
+manager. Therefore, the best is to install it in a virtual environment
+this way::
 
    git clone https://github.com/lambdablocks/lambdablocks.git
    cd lambdablocks
+   pyvenv VENV
+   source VENV/bin/activate
    python3 setup.py install
+
+Also not required for this tutorial, these dependencies are needed for
+some blocks in the included library::
+
+   pip install matplotlib requests-oauthlib
+
 
 Verification
 ^^^^^^^^^^^^
 
-Try executing::
+Don't leave your activated virtual environment, and try executing::
 
    blocks.py --help
 
