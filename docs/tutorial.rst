@@ -20,14 +20,14 @@ install Python 3 and the development headers of ``libyaml``, this is
 necessary for ``pip`` to compile PyYAML.
 
 Finally, if you want to use the Spark blocks, you will need Spark and
-Pyspark to be installed on your system (but this is not required for
-this tutorial).
+``pyspark`` to be installed on your system (but this is not required
+for this tutorial).
 
 λ-blocks
 ^^^^^^^^
 
 While λ-blocks is still in its early days of development, it is not
-available through `pip`, nor in any distribution package
+available through ``pip``, nor in any distribution package
 manager. Therefore, the best is to install it in a virtual environment
 this way::
 
@@ -60,7 +60,7 @@ Now that everything is installed, let's dive into writing a first
 
 Such a program, also called a computation graph, is written in `YAML
 <http://yaml.org/>`_, a simple data representation format. Create a
-new file and name it `wordcount.yml`: it will contain the description
+new file and name it ``wordcount.yml``: it will contain the description
 of a computation graph to perform a Wordcount. Add this content::
 
    ---
@@ -76,12 +76,12 @@ This YAML file contains two parts: the first one is a key/value list
 giving information on the computation graph (such as its name and
 description). The second part is more interesting: it contains the
 list of the code blocks that are the vertices of our graph. For now,
-there is only one vertice: it uses the block `cat` from the
-`lb.blocks.unixlike` blocks library. It has a unique name `cat` (since
-we use only once the block `cat` in this program, the vertice name can
-be the same as the block name), and one argument, a path to a file. As
-you may have guessed, this block acts like the Unix `cat` utility: it
-reads a file.
+there is only one vertice: it uses the block
+:py:func:`lb.blocks.unixlike.cat`. It has a unique name ``cat`` (since
+we use only once the block ``cat`` in this program, the vertice name
+can be the same as the block name), and one argument, a path to a
+file. As you may have guessed, this block acts like the Unix ``cat``
+utility: it reads a file.
 
 This program won't do much, except for reading a file. You can try to
 execute it this way::
@@ -91,8 +91,8 @@ execute it this way::
 If nothing happens, it is normal: the file has been read by λ-blocks,
 but it isn't supposed to be displayed on the console. If you get an
 error, the path you provided may be incorrect: be sure to execute the
-command within in the `lambdablocks` folder, or to change the
-`filename` argument.
+command within in the ``lambdablocks`` folder, or to change the
+``filename`` argument.
 
 Let's add a few vertices in our graph, and link them together to
 compute a Wordcount implementation::
@@ -126,20 +126,20 @@ compute a Wordcount implementation::
 
 We now have 4 blocks (or vertices):
 
-* `cat` reads a file and outputs a list of lines found in this file;
+* ``cat`` reads a file and outputs a list of lines found in this file;
 
-* `group_by_count` reads a list, and outputs a list of unique items,
+* ``group_by_count`` reads a list, and outputs a list of unique items,
   along with the number of times they appear in the list;
 
-* `sort` reads a list, and outputs a sorted list, sorted by the second
+* ``sort`` reads a list, and outputs a sorted list, sorted by the second
   item of each element;
 
-* `show_console` displays its inputs on the user console.
+* ``show_console`` displays its inputs on the user console.
 
 A block has named inputs and named outputs. To link two blocks
-together, we specify the inputs of a block in the `inputs` key. For
-example, the block `group_by_count` takes one input, `data`, that is
-the output `result` of the block `cat`.
+together, we specify the inputs of a block in the ``inputs`` key. For
+example, the block ``group_by_count`` takes one input, ``data``, that is
+the output ``result`` of the block ``cat``.
 
 Let's try to execute this graph::
 
@@ -153,7 +153,7 @@ Using plugins
 
 λ-blocks, while processing a computation graph, can execute plugins,
 which are pieces of Python code able to act on the graph. For example,
-let's try the included `debug` plugin::
+let's try the included :py:mod:`lb.plugins.debug` plugin::
 
    blocks.py -f wordcount.yml -p debug
 
@@ -162,11 +162,11 @@ block, which allows you to effectively see what every block is
 doing. This is useful to follow the data as it is transformed from the
 entry of the graph to all the following vertices.
 
-You can also try to execute the `instrumentation` plugin the same way,
-which will measure the time taken by every block to compute, useful to
-detect bottlenecks::
+You can also try to execute the :py:mod:`lb.plugins.instrumentation`
+plugin the same way, which will measure the time taken by every block
+to compute, useful to detect bottlenecks::
 
    blocks.py -f wordcount.yml -p debug instrumentation
 
-Unsurprisingly, the `cat` block should be the slowest, because it
+Unsurprisingly, the ``cat`` block should be the slowest, because it
 requires to read a file on disk.
