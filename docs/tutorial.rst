@@ -13,7 +13,7 @@ Dependencies
 If you're using Debian, Ubuntu, or a system of this family, the
 required dependencies should all be available in your package manager::
 
-   apt install python3 python3-venv libyaml-dev
+   sudo apt install python3 python3-venv libyaml-dev
 
 If you're not using Debian or a Debian-based system, be sure to
 install Python 3 and the development headers of ``libyaml``, this is

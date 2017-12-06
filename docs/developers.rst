@@ -6,7 +6,7 @@ Dependencies
 
 Install the development dependencies::
 
-   apt install python3-nose2 python3-nose2-cov python3-sphinx
+   sudo apt install python3-nose2 python3-nose2-cov python3-sphinx
 
 Tests
 -----
