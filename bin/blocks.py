@@ -44,8 +44,9 @@ def parse_args():
                         help='List of plugins to activate')
     parser.add_argument('-v', '--verbose',
                         required=False,
-                        action='store_true',
-                        help='Verbose run, show log messages.')
+                        action='count',
+                        default=0,
+                        help='Verbose run, use up to 4 times to get more logging.')
     args = parser.parse_args()
     return args
 
@@ -65,8 +66,8 @@ def import_plugins(plugins):
 def main():
     args = parse_args()
 
-    if not args.verbose:
-        logging.disable(logging.DEBUG)
+    # -v for ERROR, -vv for WARNING, -VVV for INFO, -vvvv for DEBUG
+    logging.disable((4 - args.verbose) * 10)
 
     logger = get_logger('blocks.py')
 
