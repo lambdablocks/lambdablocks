@@ -37,6 +37,7 @@ block collections and plugins.
    blocks
    plugins
    write-blocks
+   write-plugins
    developers
    api
 
