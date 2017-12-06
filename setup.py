@@ -52,7 +52,7 @@ setup(
     packages=['lb', 'lb.blocks', 'lb.plugins'],
 
     # install_requires=['yaml', 'matplotlib', 'requests-oauthlib'],
-    install_requires=['pyyaml']
+    install_requires=['pyyaml'],
 
     extras_require={
         'dev': ['check-manifest'],
