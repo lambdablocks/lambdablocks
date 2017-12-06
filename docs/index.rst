@@ -36,6 +36,7 @@ block collections and plugins.
    examples
    blocks
    plugins
+   write-blocks
    developers
    api
 
