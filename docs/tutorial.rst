@@ -170,3 +170,12 @@ to compute, useful to detect bottlenecks::
 
 Unsurprisingly, the ``cat`` block should be the slowest, because it
 requires to read a file on disk.
+
+Next steps
+----------
+
+Now that we've seen some possibilities of λ-blocks and how it works,
+you can look at some :doc:`examples <examples>`, :doc:`check the list
+of available blocks <blocks>`, :doc:`the list of available plugins
+<plugins>`, :doc:`write your own blocks <write-blocks>` or :doc:`write
+your own plugins <write-plugins>`.
