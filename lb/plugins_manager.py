@@ -15,6 +15,9 @@
 import glob
 import os
 
+from lb.log import get_logger
+logger = get_logger(__name__)
+
 here = os.path.abspath(os.path.dirname(__file__))
 
 # global variable (singleton) containing the registered hooks
@@ -35,6 +38,8 @@ def available_plugins():
     return [os.path.basename(x).split('.')[0] for x in plugins]
 
 def _register_hook(f, hookname):
+    logger.debug('Registering function {} from {} to hook {}'.format(
+        f.__name__, f.__module__, hookname))
     HOOKS[hookname].append(f)
 
 def before_block_execution(f):
