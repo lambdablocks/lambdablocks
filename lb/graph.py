@@ -13,7 +13,7 @@
 # limitations under the License.
 
 """
-This modules provides facilities to build and run a topology graph out
+This module provides facilities to build and run a topology graph out
 of a YAML file.
 """
 
