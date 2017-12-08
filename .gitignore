@@ -8,3 +8,4 @@ htmlcov
 build/
 dist/
 lambdablocks.egg-info/
+flycheck_*.py
