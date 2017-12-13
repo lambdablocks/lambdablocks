@@ -19,7 +19,7 @@ import logging
 
 from lb.graph import Graph
 from lb.log import get_logger
-from lb.plugins_manager import available_plugins
+from lb.plugins_manager import available_plugins, import_plugins
 from lb.registry import Registry
 
 def parse_args():
@@ -40,28 +40,17 @@ def parse_args():
     parser.add_argument('-p', '--plugins',
                         required=False,
                         nargs='+',
-                        choices=available_plugins(),
-                        help='List of plugins to activate')
+                        help='List of plugins to activate. Plugins in the '
+                        'standard library are lb.plugins.{{{}}}'.format(
+                            ','.join(available_plugins())))
     parser.add_argument('-v', '--verbose',
                         required=False,
                         action='count',
                         default=0,
                         help='Verbose run, use up to 4 times to get more logging.')
     args = parser.parse_args()
+
     return args
-
-def import_plugins(plugins):
-    """
-    Imports the activated plugins, which will register their hooks.
-    """
-    if plugins is not None:
-        for plugin in plugins:
-            try:
-                __import__('lb.plugins.{}'.format(plugin))
-            except ImportError as e:
-                print('Plugin {} could not be found. Is it in the folder `lb/plugins/`?'.format(plugin))
-                raise e
-
 
 def main():
     args = parse_args()

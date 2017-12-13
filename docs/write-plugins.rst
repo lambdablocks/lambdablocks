@@ -34,7 +34,12 @@ Let's begin with an example::
 Name this file something like ``log.py``, move it in
 ``lambdablocks/lb/plugins/``, and use it this way::
 
-   blocks.py -f path/to/your/graph.yaml -p log
+   blocks.py -f path/to/your/graph.yaml -p lb.plugins.log
+
+If you're working on a packaged version of λ-blocks (as opposed to the
+git version), you can instead put this file anywhere you like, as long
+as it is importable by Python (i.e., in the Python path). Then, be
+sure to use ``-p path.to.log`` so λ-blocks is able to import it.
 
 Let's see what happens in this example:
 

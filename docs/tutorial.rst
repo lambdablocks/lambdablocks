@@ -155,7 +155,7 @@ Using plugins
 which are pieces of Python code able to act on the graph. For example,
 let's try the included :py:mod:`lb.plugins.debug` plugin::
 
-   blocks.py -f wordcount.yml -p debug
+   blocks.py -f wordcount.yml -p lb.plugins.debug
 
 This plugin will display an excerpt of the results produced by each
 block, which allows you to effectively see what every block is
@@ -166,7 +166,7 @@ You can also try to execute the :py:mod:`lb.plugins.instrumentation`
 plugin the same way, which will measure the time taken by every block
 to compute, useful to detect bottlenecks::
 
-   blocks.py -f wordcount.yml -p debug instrumentation
+   blocks.py -f wordcount.yml -p lb.plugins.debug lb.plugins.instrumentation
 
 Unsurprisingly, the ``cat`` block should be the slowest, because it
 requires to read a file on disk.

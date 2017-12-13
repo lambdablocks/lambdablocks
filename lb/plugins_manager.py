@@ -30,12 +30,24 @@ HOOKS = {
     }
 
 def available_plugins():
-    """
-    List plugins available from lb/plugins/
+    """List plugins available from lb/plugins/.
     """
     path = os.path.join(here, 'plugins')
     plugins = glob.glob('{}/*.py'.format(path))
     return [os.path.basename(x).split('.')[0] for x in plugins]
+
+def import_plugins(plugins):
+    """Imports the activated plugins, which will trigger their hooks
+    registration.
+    """
+    if plugins is not None:
+        for plugin in plugins:
+            try:
+                __import__(plugin)
+            except ImportError as e:
+                logger.error('Plugin {} could not be found. Is it in the '
+                             'Python path?'.format(plugin))
+                raise e
 
 def _register_hook(f, hookname):
     logger.debug('Registering function {} from {} to hook {}'.format(
