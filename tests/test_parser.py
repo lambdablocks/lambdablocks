@@ -21,6 +21,9 @@ trouble: "There are two difficult problems in computer science: cache
 invalidation, naming things, and off-by-one errors."
 """
 
+import logging
+logging.disable(20) # overrides default value of DEBUG, makes nose2 less noisy.
+
 from lb.exceptions import YAMLError
 from lb.graph import Graph
 from lb.registry import Registry
