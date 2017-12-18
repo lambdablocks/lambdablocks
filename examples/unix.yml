@@ -1,6 +1,7 @@
 ---
 name: Unix
 description: Example of a graph using unix-like pipes. Shows the root account from /etc/passwd.
+modules: [lb.blocks.unixlike, lb.blocks.misc]
 ---
 - block: cat
   name: cat

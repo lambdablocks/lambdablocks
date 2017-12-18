@@ -1,6 +1,7 @@
 ---
 name: topology-wordcount
 description: When fed with a list of items, will group them and return the top-5 ones along with their number of occurences.
+modules: [lb.blocks.unixlike, lb.blocks.misc]
 ---
 - block: group_by_count
   name: reduce

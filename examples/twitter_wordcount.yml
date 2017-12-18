@@ -1,6 +1,7 @@
 ---
 name: twitter-wordcount
 description: Extract the most used hashtags on the recent AFP timeline.
+modules: [lb.blocks.twitter, lb.blocks.misc]
 ---
 - block: twitter_search
   name: twitter_search

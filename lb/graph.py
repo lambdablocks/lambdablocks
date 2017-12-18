@@ -28,6 +28,7 @@ import yaml
 import lb.types
 from lb.exceptions import NotBoundError, YAMLError, ExecutionError
 from lb.log import get_logger
+from lb.registry import Registry
 from lb.plugins_manager import HOOKS
 
 logger = get_logger(__name__)
@@ -84,7 +85,7 @@ class Topology(_Section):
             self.fields['bind_out'] = {}
 
         # we create the subgraph
-        self.graph = Graph(filename=self.fields['topology'], registry=registry, skip_check=True)
+        self.graph = Graph(filename=self.fields['topology'], skip_check=True, registry=registry)
 
     def get_outbound(self, value):
         """
@@ -153,12 +154,20 @@ class Graph(object):
         self.filename = filename
         self.filecontent = filecontent
         self.registry = registry
+
         logger.debug('Parsing YAML data')
         self._parse_file()
+
+        if self.registry:
+            logger.debug('Adding modules in the registry')
+            self._register_modules()
+
         logger.debug('Checking YAML data')
         self._check_yaml()
+
         logger.debug('Building grah')
         self._build_dag()
+
         if not skip_check:
             logger.debug('Checking graph edges and types')
             self._check_dag_inputs()
@@ -180,7 +189,7 @@ class Graph(object):
             documents = list(yaml.load_all(content))
             assert len(documents) == 2, \
                 'YAML file must contain 2 documents: metadata, and DAG description.'
-            self.dag_metadata = documents[0]
+            self.dag_metadata = documents[0] or {}
             assert documents[1] != None, \
                 "The topology doesn't define any block."
 
@@ -202,6 +211,13 @@ class Graph(object):
                 parse(f)
         else:
             parse(self.filecontent)
+
+    def _register_modules(self):
+        """Initiates the registry with the modules defined in the yaml file.
+        """
+        if 'modules' in self.dag_metadata.keys():
+            for module in self.dag_metadata['modules']:
+                self.registry.add_module(module)
 
     def _build_dag(self):
         """

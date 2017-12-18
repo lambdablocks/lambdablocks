@@ -1,6 +1,7 @@
 ---
 name: Wordcount
 description: Gives the top 5 words along with their number of occurences
+modules: [lb.blocks.spark]
 ---
 - block: spark_text_to_words
   name: text_to_words

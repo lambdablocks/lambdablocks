@@ -66,6 +66,7 @@ of a computation graph to perform a Wordcount. Add this content::
    ---
    name: wordcount
    description: Counts words
+   modules: [lb.blocks.unixlike]
    ---
    - block: cat
      name: cat
@@ -73,10 +74,10 @@ of a computation graph to perform a Wordcount. Add this content::
        filename: examples/wordlist
 
 This YAML file contains two parts: the first one is a key/value list
-giving information on the computation graph (such as its name and
-description). The second part is more interesting: it contains the
-list of the code blocks that are the vertices of our graph. For now,
-there is only one vertice: it uses the block
+giving information on the computation graph (such as its name,
+description, and used modules). The second part is more interesting:
+it contains the list of the code blocks that are the vertices of our
+graph. For now, there is only one vertice: it uses the block
 :py:func:`lb.blocks.unixlike.cat`. It has a unique name ``cat`` (since
 we use only once the block ``cat`` in this program, the vertice name
 can be the same as the block name), and one argument, a path to a
@@ -100,6 +101,7 @@ compute a Wordcount implementation::
    ---
    name: wordcount
    description: counts words
+   modules: [lb.blocks.unixlike]
    ---
    - block: cat
      name: cat

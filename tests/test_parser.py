@@ -33,7 +33,7 @@ import unittest
 
 class TestParser(unittest.TestCase):
     def setUp(self):
-        self.registry = Registry(load_internal_modules=False, external_modules=['tests.blocks'])
+        self.registry = Registry()
 
     def tearDown(self):
         pass
@@ -66,6 +66,7 @@ class TestParser(unittest.TestCase):
     def test_unnamed_section(self):
         content = textwrap.dedent("""
         ---
+        modules: [tests.blocks]
         ---
         - block: foo
         """)
@@ -95,6 +96,7 @@ class TestParser(unittest.TestCase):
     def test_unknown_input(self):
         content = textwrap.dedent("""
         ---
+        modules: [tests.blocks]
         ---
         - block: sometimes_reverse
           name: sometimes_reverse
@@ -107,6 +109,7 @@ class TestParser(unittest.TestCase):
     def test_correct_graph(self):
         content = textwrap.dedent("""
         ---
+        modules: [tests.blocks]
         ---
         - block: input
           name: input
@@ -133,6 +136,7 @@ class TestParser(unittest.TestCase):
     def test_dag_loop(self):
         content = textwrap.dedent("""
         ---
+        modules: [tests.blocks]
         ---
         - block: input
           name: input
@@ -152,6 +156,7 @@ class TestParser(unittest.TestCase):
     def test_dag_wrong_types(self):
         content = textwrap.dedent("""
         ---
+        modules: [tests.blocks]
         ---
         - block: input_str
           name: input_str
@@ -166,6 +171,7 @@ class TestParser(unittest.TestCase):
     def test_trivial_execution(self):
         content = textwrap.dedent("""
         ---
+        modules: [tests.blocks]
         ---
         - block: input
           name: input

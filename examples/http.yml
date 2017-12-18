@@ -1,6 +1,7 @@
 ---
 name: http
 description: Make an HTTP request to get a list of words, keep only those having the letter 'e', writes the result in a file.
+modules: [lb.blocks.http, lb.blocks.misc, lb.blocks.unixlike]
 ---
 - block: read_http
   name: read_http

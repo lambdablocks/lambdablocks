@@ -28,15 +28,6 @@ def parse_args():
     parser.add_argument('-f', '--filename',
                         required=True,
                         help='YAML file to be executed.')
-    parser.add_argument('-m', '--modules',
-                        required=False,
-                        nargs='*',
-                        default=[],
-                        help='Additional Python modules containing blocks.')
-    parser.add_argument('--no-internal-modules',
-                        required=False,
-                        action='store_false',
-                        help='Do not load lambda-blocks predefined modules.')
     parser.add_argument('-p', '--plugins',
                         required=False,
                         nargs='+',
@@ -61,9 +52,8 @@ def main():
     logger = get_logger('blocks.py')
 
     logger.debug('Starting lambda-blocks')
-    logger.debug('Creating registry and importing modules')
-    registry = Registry(external_modules=args.modules,
-                       load_internal_modules=args.no_internal_modules)
+    logger.debug('Creating registry')
+    registry = Registry()
 
     logger.debug('Importing configured plugins')
     import_plugins(args.plugins)

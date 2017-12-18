@@ -48,31 +48,27 @@ class Registry(object):
     inferred properties, such as their parameters, metadata, inputs
     and output.
     """
-    def __init__(self, external_modules=[], load_internal_modules=True):
-        """
-        Loads Python modules containing blocks and registers them.
+    def __init__(self):
+        """Inits a registry.
         """
         self.blocks = {}
+        # keeps track of imported modules, to avoid double import
+        self.imported_modules = []
 
-        if load_internal_modules:
-            # we list all local modules (lb/blocks/*)
-            internal_modules = []
-            local_package = lb.blocks
-            prefix = local_package.__name__ + "."
-            for _, module, _ in pkgutil.iter_modules(local_package.__path__, prefix):
-                internal_modules.append(module)
-        else:
-            internal_modules = []
-        for module in internal_modules + external_modules:
+    def add_module(self, module):
+        """Adds all blocks of a module in the registry.
+        """
+        if module not in self.imported_modules:
             try:
                 mod = importlib.import_module(module)
             except ImportError:
-                logger.warning('Module {} could not be imported, it was '
+                logger.error('Module {} could not be imported, it was '
                     'either not found or misses one or more dependency.'.format(module))
             else:
                 for _, func in mod.__dict__.items():
                     if hasattr(func, '_is_block') and func._is_block:
                         self._register_block(func)
+                self.imported_modules.append(module)
 
     def _register_block(self, func):
         """

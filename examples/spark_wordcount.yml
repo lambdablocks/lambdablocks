@@ -1,6 +1,7 @@
 ---
 name: Display wordcount
 description: foo
+modules: [lb.blocks.spark, lb.blocks.misc, lb.blocks.matplotlib]
 ---
 - block: spark_readfile
   name: readfile
